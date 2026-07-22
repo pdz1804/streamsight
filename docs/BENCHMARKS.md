@@ -94,6 +94,20 @@ Two changes were made off the back of that profile:
 Result: server latency **101 ms -> 48 ms**, viewer throughput **8.8 -> 13.4 FPS**, end-to-end
 send-to-paint latency **~12 ms**, comfortably inside the 100 ms target.
 
+## Measurement caveats
+
+- **Peak VRAM is host-wide, not process-scoped.** It comes from NVML
+  (`nvmlDeviceGetMemoryInfo().used`), which reports every allocation on the device. If anything
+  else is on the GPU during a run, the figure is inflated. Treat the numbers above as an upper
+  bound measured on an otherwise-idle card.
+- **Recall is measured on the output the app actually serves**, which is the post-NMS detection
+  list returned by `model.track(...)`. That call applies the tracker, so a detection the tracker
+  discards does not appear. This is deliberate: it scores what a user of this service receives,
+  not what the raw detector head produced.
+- **One clip, one scene.** Agreement is measured against an FP32 baseline on the bundled demo
+  footage. It says which backend best reproduces the reference *on this content*; it is not a
+  dataset-level accuracy claim.
+
 ## Honest gaps
 
 - No TensorRT numbers; the artifacts could not be built on this host (see QUANTIZATION.md).

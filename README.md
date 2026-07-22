@@ -158,8 +158,12 @@ survives a reload.
   shows it in the model selector.
 - **Exported graphs are shape-fixed.** An artifact exported at 640 px cannot serve 480 px, so
   resolution sweeps only apply to the PyTorch backends. This is surfaced in the UI, not hidden.
-- **Stability is verified over minutes, not the planned 4 hours.** The bounded ring buffer, capped
-  metric windows and periodic `gc` are in place and unit-tested, but the long soak has not run.
+- **Single-viewer by design.** One model instance means one ByteTrack identity table, so a second
+  browser tab or a single-frame upload during a live stream perturbs that stream's track ids.
+  Fixing it properly means per-session tracker state, which is Phase 7 work. For the intended use
+  (one operator, one screen) it is not a problem, but it is a real constraint, not an oversight.
+- **No authentication.** Local single-user demo. `POST /config/degrade` and `POST /config/model`
+  are unauthenticated and take no body, so do not expose this to a network you do not control.
 - **No fine-tuning yet.** The model is pretrained COCO. Training is a cloud-GPU phase.
 
 ## License

@@ -219,4 +219,3 @@ class Detector:
                 torch.cuda.empty_cache()
         except Exception as exc:  # noqa: BLE001 - teardown must not raise
             logger.debug("could not empty the CUDA cache on close: %s", exc)
-

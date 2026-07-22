@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 from fastapi import APIRouter, File, Request, UploadFile
+from starlette.concurrency import run_in_threadpool
 
 from .. import __version__
 from ..dependencies import RegistryDep, RuntimeDep, SettingsDep
@@ -87,4 +88,11 @@ async def upload_source(
     settings: SettingsDep,
     file: UploadFile = File(...),
 ) -> SourceInfo:
-    return registry.save_upload(file.filename or "", file.file, settings.max_upload_bytes)
+    """Store an uploaded video.
+
+    The copy runs in a worker thread: writing tens of megabytes to disk from the
+    event loop would stall every live stream for the duration of the upload.
+    """
+    return await run_in_threadpool(
+        registry.save_upload, file.filename or "", file.file, settings.max_upload_bytes
+    )

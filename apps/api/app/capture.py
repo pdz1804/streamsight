@@ -29,6 +29,10 @@ logger = logging.getLogger(__name__)
 #: Live sources are never paced; recorded ones are.
 _LIVE_KINDS: frozenset[str] = frozenset({"webcam", "rtsp"})
 
+#: Reads that fail back-to-back before the source is declared dead. Counts across
+#: loop-rewinds, so a file that seeks successfully but never decodes still ends.
+_MAX_CONSECUTIVE_READ_FAILURES = 30
+
 
 def classify_source(spec: str) -> SourceKind:
     """Infer the source kind from a user-supplied spec string."""
@@ -120,14 +124,32 @@ class FrameSource:
             self.source_fps,
         )
 
-    def close(self) -> None:
-        """Stop the producer and release the device."""
+    def close(self, join_timeout: float = 10.0) -> None:
+        """Stop the producer and release the device.
+
+        The capture handle is released **only** once the producer thread has
+        actually exited. Releasing it while that thread might still be inside
+        ``capture.read()`` is a use-after-free in OpenCV's native code, which
+        crashes the process rather than raising. An RTSP read can block for
+        longer than a short timeout, so the wait is generous; if the thread is
+        still running after it, the handle is deliberately leaked instead. A
+        leaked handle costs memory, a use-after-free costs the process.
+        """
         self._stop.set()
         with self._arrived:
             self._arrived.notify_all()
         thread = self._thread
         if thread is not None and thread.is_alive():
-            thread.join(timeout=2.0)
+            thread.join(timeout=join_timeout)
+            if thread.is_alive():
+                logger.error(
+                    "capture thread for %s did not exit within %.0fs; leaking the handle "
+                    "rather than releasing it underneath a live read",
+                    self.spec,
+                    join_timeout,
+                )
+                self._capture = None
+                return
         if self._capture is not None:
             self._capture.release()
             self._capture = None
@@ -202,12 +224,23 @@ class FrameSource:
         while not self._stop.is_set():
             ok, frame = capture.read()
             if not ok:
-                if self.loop and capture.set(cv2.CAP_PROP_POS_FRAMES, 0):
-                    consecutive_failures = 0
-                    continue
                 consecutive_failures += 1
-                # Live feeds hiccup; tolerate a few misses before declaring the end.
-                if self.kind == "file" or consecutive_failures > 30:
+                # A seek that "succeeds" without producing frames is the failure
+                # mode this guards: a corrupt file can report a seekable index
+                # forever, so the counter must NOT be reset here. Resetting it on
+                # rewind makes the bail-out below unreachable and spins a core at
+                # 100% while the client waits on a stream that never delivers.
+                if consecutive_failures > _MAX_CONSECUTIVE_READ_FAILURES:
+                    logger.warning(
+                        "%s source %s failed %d consecutive reads; ending",
+                        self.kind,
+                        self.spec,
+                        consecutive_failures,
+                    )
+                    break
+                if self.loop and capture.set(cv2.CAP_PROP_POS_FRAMES, 0):
+                    continue
+                if self.kind == "file":
                     break
                 time.sleep(0.05)
                 continue
@@ -233,4 +266,3 @@ class FrameSource:
         with self._arrived:
             self._finished = True
             self._arrived.notify_all()
-

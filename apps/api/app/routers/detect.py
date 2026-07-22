@@ -7,6 +7,7 @@ import logging
 
 from fastapi import APIRouter, File, Query, UploadFile, WebSocket
 from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 
 from ..dependencies import RegistryWsDep, RuntimeDep, RuntimeWsDep, SettingsDep
 from ..models import FrameResponse
@@ -36,8 +37,17 @@ def detect_frame(payload: FrameRequest, runtime: RuntimeDep) -> FrameResponse:
     summary="Detect + track one uploaded image file",
 )
 async def detect_image(runtime: RuntimeDep, file: UploadFile = File(...)) -> FrameResponse:
-    frame = decode_image_bytes(await file.read())
-    return _run(frame, runtime)
+    """Decode and run one uploaded image.
+
+    Inference is pushed to a worker thread. This handler has to be ``async`` to
+    await the upload, which means its body runs on the event loop -- and a
+    synchronous inference call there would stall every active WebSocket send and
+    metrics poll for its full duration. (``/detect/frame`` is a plain ``def``, so
+    Starlette already runs it in a threadpool.)
+    """
+    raw = await file.read()
+    frame = decode_image_bytes(raw)
+    return await run_in_threadpool(_run, frame, runtime)
 
 
 def _run(frame, runtime) -> FrameResponse:  # noqa: ANN001 - numpy array / runtime

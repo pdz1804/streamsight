@@ -152,7 +152,10 @@ class DetectionStore:
                     batch.append(nxt)
                 try:
                     self._write_batch(conn, batch)
-                except sqlite3.Error as exc:
+                except Exception as exc:  # noqa: BLE001
+                    # Catching only sqlite3.Error would let anything else kill
+                    # this thread silently, after which every subsequent record()
+                    # fills the queue and telemetry stops with no indication why.
                     logger.warning("telemetry write failed: %s", exc)
         finally:
             conn.close()

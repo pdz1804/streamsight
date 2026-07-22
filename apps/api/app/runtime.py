@@ -28,7 +28,7 @@ import numpy as np
 
 from .backends import BACKENDS, Backend, availability, candidate_chain, get_backend
 from .config import GpuProbe, Settings, probe_gpu, resolve_start_imgsz
-from .detector import Detector, OutOfVramError
+from .detector import Detector, OutOfVramError, is_oom
 from .exceptions import BackendUnavailableError, NoBackendError
 from .metrics import MetricsCollector
 from .models import (
@@ -141,7 +141,12 @@ class InferenceRuntime:
             except Exception as exc:  # noqa: BLE001 - any failure means "try the next one"
                 reason = _short(exc)
                 logger.warning("backend %s at %d px unusable: %s", backend.key, imgsz, reason)
-                self._unusable[(backend.key, imgsz)] = reason
+                # Only *capability* failures are permanent. Running out of memory
+                # says something about the machine at this instant, not about the
+                # backend, so blacklisting on OOM would retire a perfectly good
+                # configuration because one frame arrived at a bad moment.
+                if not is_oom(exc):
+                    self._unusable[(backend.key, imgsz)] = reason
                 detector.close()
                 continue
             return detector
@@ -225,15 +230,22 @@ class InferenceRuntime:
     # ------------------------------------------------------------ degradation
 
     def _degrade(self, reason: str) -> None:
-        """Step down one rung of the ladder. Caller must hold the lock."""
+        """Step down one rung of the ladder. Caller must hold the lock.
+
+        The current detector is kept alive until a replacement has loaded *and*
+        warmed up. Releasing it first is the obvious ordering and it is wrong: if
+        every remaining rung fails, the service is left with no detector at all
+        and every route -- including the one that would let an operator fix it --
+        starts returning 503 with no way back short of a restart.
+
+        The cost of holding both briefly is one extra model in memory for a few
+        seconds, which the 4 GB budget absorbs (the model is ~130 MiB resident).
+        """
         current = self._detector
         if current is None:
             return
         backend = current.backend
         imgsz = current.imgsz
-        current.close()
-        self._detector = None
-        gc.collect()
 
         if imgsz > self._settings.degraded_imgsz:
             target_imgsz = self._settings.degraded_imgsz
@@ -248,13 +260,31 @@ class InferenceRuntime:
             chain = full[cutoff:]
             note = f"fell back from {backend.key} after VRAM exhaustion"
 
+        # An OOM is by definition a memory-pressure event, so free the old model
+        # before trying to load a new one -- but remember enough to put it back.
+        current.close()
+        self._detector = None
+        gc.collect()
+
         detector = self._load_first_working(chain, target_imgsz, warmup_frames=1)
-        if detector is None and chain and chain[0].key != "fp32_cpu":
+        if detector is None and not any(b.key == "fp32_cpu" for b in chain):
+            # Last resort: the CPU path needs no GPU memory and no export step.
             detector = self._load_first_working(
                 [get_backend("fp32_cpu")], target_imgsz, warmup_frames=1
             )
         if detector is None:
-            self.metrics.set_degraded(True, f"{note}; no fallback loaded ({reason})")
+            # Nothing cheaper works. Restore what was running rather than leaving
+            # the service dead: it was serving traffic a moment ago.
+            restored = self._load_first_working([backend], imgsz, warmup_frames=1)
+            if restored is not None:
+                self._detector = restored
+                self.metrics.set_degraded(
+                    True, f"{note}; ladder exhausted, kept {backend.key} ({reason})"
+                )
+                logger.error("degradation ladder exhausted; restored %s", backend.key)
+            else:
+                self.metrics.set_degraded(True, f"{note}; no fallback loaded ({reason})")
+                logger.error("degradation ladder exhausted and %s did not reload", backend.key)
             return
         self._detector = detector
         self.metrics.set_degraded(True, note)

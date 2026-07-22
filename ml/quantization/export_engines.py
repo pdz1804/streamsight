@@ -32,6 +32,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # sibling: calibrate.py
 
 from app.backends import BACKENDS  # noqa: E402
 from app.config import get_settings  # noqa: E402
@@ -103,26 +104,42 @@ def export_one(fmt: str, weights: Path, imgsz: int, data: str, force: bool) -> d
 
 
 def quantize_onnx_int8(weights: Path, imgsz: int, target: Path) -> dict[str, Any]:
-    """Produce a genuinely 8-bit ONNX graph for CPU deployment.
+    """Produce a genuinely 8-bit ONNX graph by delegating to ``calibrate.py``.
 
-    Ultralytics' ``int8=True`` is a no-op for the ONNX format -- it applies to the
-    TFLite and TensorRT paths -- so an "INT8 ONNX" produced that way is still
-    FP32. Dynamic quantization through ONNX Runtime is the real route: weights
-    become INT8 on disk and activations are quantized per batch at inference,
-    which needs no calibration set.
+    There is exactly one INT8-ONNX route in this repo and it lives in
+    ``ml/quantization/calibrate.py``: static QDQ quantization against held-out
+    calibration footage, with the detection head kept in float. Reimplementing a
+    second route here would produce a different model under the same filename
+    depending on which script ran last.
+
+    Dynamic quantization was tried first and rejected: it emits ``ConvInteger``,
+    for which ONNX Runtime's CPU provider has no kernel, so the resulting model
+    loads and then fails at the first inference. See docs/QUANTIZATION.md.
     """
-    from onnxruntime.quantization import QuantType, quantize_dynamic
+    import calibrate
+
+    print("\n--- exporting int8_onnx_cpu (static QDQ, see calibrate.py) ---")
+    started = time.perf_counter()
+    settings = get_settings()
+    calibration_source = settings.assets_dir / "calibration.avi"
+    if not calibration_source.exists():
+        return {
+            "format": "int8_onnx_cpu",
+            "status": "failed",
+            "reason": f"calibration clip missing at {calibration_source}; "
+            "run ml/scripts/fetch_assets.py",
+        }
+
     from ultralytics import YOLO
 
-    print("\n--- exporting int8_onnx_cpu (onnxruntime dynamic quantization) ---")
-    started = time.perf_counter()
     try:
         fp32_path = Path(YOLO(str(weights)).export(format="onnx", imgsz=imgsz, half=False))
-        target.parent.mkdir(parents=True, exist_ok=True)
-        quantize_dynamic(
-            model_input=str(fp32_path),
-            model_output=str(target),
-            weight_type=QuantType.QInt8,
+        summary = calibrate.quantize(
+            fp32_path,
+            target,
+            calibration_source,
+            calibrate.DEFAULT_CALIBRATION_FRAMES,
+            imgsz,
         )
         fp32_path.unlink(missing_ok=True)
     except Exception as exc:  # noqa: BLE001
@@ -132,7 +149,7 @@ def quantize_onnx_int8(weights: Path, imgsz: int, target: Path) -> dict[str, Any
         "format": "int8_onnx_cpu",
         "status": "ok",
         "path": str(target),
-        "size_mb": round(_size_mb(target), 2),
+        "size_mb": summary["size_mb"],
         "export_s": round(time.perf_counter() - started, 1),
     }
 
