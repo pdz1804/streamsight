@@ -114,6 +114,9 @@ video source ──> capture thread ──> ring buffer ──> inference runtim
 - **`apps/web`** Next.js 15 console with a first-class light and dark theme.
 - **`ml/`** export, calibration, benchmarking and frontier analysis.
 
+**Full technical write-up:** [`docs/technical-deep-dive.md`](docs/technical-deep-dive.md) — design
+decisions with their reasoning, the quantization findings, the performance work, and the honest gaps.
+
 Detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ·
 [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) ·
 [`docs/INFERENCE_GUIDE.md`](docs/INFERENCE_GUIDE.md) ·
