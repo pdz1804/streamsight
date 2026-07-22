@@ -1,0 +1,46 @@
+# StreamSight console -- Next.js 15 production build.
+#
+# Build from the REPO ROOT, not from infra/:
+#   docker build -f infra/Dockerfile.web -t streamsight-web .
+
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY apps/web/package.json apps/web/package-lock.json ./
+RUN npm ci
+
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+
+# Sources are enumerated rather than copied wholesale: `COPY apps/web ./` would
+# drag the host's node_modules over the ones installed above, and those are
+# built for the host platform.
+COPY apps/web/package.json apps/web/package-lock.json ./
+COPY apps/web/next.config.mjs apps/web/postcss.config.mjs ./
+COPY apps/web/tsconfig.json apps/web/next-env.d.ts ./
+COPY apps/web/app ./app
+COPY apps/web/components ./components
+COPY apps/web/lib ./lib
+
+# next.config.mjs inlines this at build time, so it cannot be changed by the
+# container's environment afterwards. It is the URL the *browser* uses, not one
+# resolved inside the compose network -- which is why the default is localhost
+# and not the `api` service name.
+ARG NEXT_PUBLIC_API_BASE=http://localhost:8100
+ENV NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE
+RUN npm run build
+
+FROM node:22-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+
+# next.config.mjs does not set `output: "standalone"`, so the runtime needs a
+# real node_modules. Installing with --omit=dev drops TypeScript, Tailwind and
+# Playwright, which is the bulk of the tree.
+COPY apps/web/package.json apps/web/package-lock.json ./
+RUN npm ci --omit=dev
+COPY --from=build /app/.next ./.next
+COPY apps/web/next.config.mjs ./
+
+EXPOSE 3100
+CMD ["npm", "run", "start"]

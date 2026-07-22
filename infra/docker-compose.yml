@@ -1,0 +1,47 @@
+# StreamSight, containerised. CPU-only by design -- see infra/Dockerfile.api for
+# why there is no CUDA base image and what GPU inference would additionally
+# require (NVIDIA Container Toolkit, `--gpus all`, a cu121 torch wheel).
+#
+# Both build contexts are the repo root, so run this from anywhere:
+#   docker compose -f infra/docker-compose.yml up --build
+#
+# Then open http://localhost:3100.
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.api
+    ports:
+      - "8100:8100"
+    environment:
+      # Defaults from .env.example; override here rather than editing the image.
+      STREAMSIGHT_DEFAULT_IMGSZ: "640"
+      STREAMSIGHT_DEGRADED_IMGSZ: "480"
+      STREAMSIGHT_JPEG_QUALITY: "80"
+    volumes:
+      # Uploaded clips and the SQLite detection log survive a container rebuild.
+      - api-data:/app/apps/api/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8100/health')"]
+      interval: 30s
+      timeout: 10s
+      # The first model load and warmup take tens of seconds on CPU.
+      start_period: 120s
+      retries: 3
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.web
+      args:
+        # Baked into the bundle at build time. This is the address the browser
+        # dials, so it stays on the host mapping, not the compose service name.
+        NEXT_PUBLIC_API_BASE: http://localhost:8100
+    ports:
+      - "3100:3100"
+    depends_on:
+      - api
+
+volumes:
+  api-data:

@@ -117,11 +117,17 @@ video source ──> capture thread ──> ring buffer ──> inference runtim
 **Full technical write-up:** [`docs/technical-deep-dive.md`](docs/technical-deep-dive.md) — design
 decisions with their reasoning, the quantization findings, the performance work, and the honest gaps.
 
-Detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ·
-[`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) ·
-[`docs/INFERENCE_GUIDE.md`](docs/INFERENCE_GUIDE.md) ·
-[`docs/QUANTIZATION.md`](docs/QUANTIZATION.md) ·
-[`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
+| Doc | Covers |
+|---|---|
+| [ARCHITECTURE](docs/ARCHITECTURE.md) | data flow, and why each piece is shaped the way it is |
+| [API_REFERENCE](docs/API_REFERENCE.md) | every endpoint, payload, and the precision vocabulary |
+| [INFERENCE_GUIDE](docs/INFERENCE_GUIDE.md) | setup, backend ladder, VRAM budget, troubleshooting |
+| [QUANTIZATION](docs/QUANTIZATION.md) | calibration, the INT8 findings, per-target fit matrix |
+| [BENCHMARKS](docs/BENCHMARKS.md) | how the frontier is measured, and its caveats |
+| [DATASETS](docs/DATASETS.md) | COCO/MOT download, integrity policy, the MOT registration gate |
+| [TRAINING_GUIDE](docs/TRAINING_GUIDE.md) | the Colab fine-tune, resume story, LOCAL vs CLOUD |
+| [MLOPS](docs/MLOPS.md) | tracking server, model registry, the promotion gate |
+| [DEPLOYMENT](docs/DEPLOYMENT.md) | local run, Docker, ports, environment variables |
 
 ## Stack
 
@@ -133,12 +139,12 @@ Detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ·
 | Quantization | ONNX Runtime static QDQ | 1.18.1 | Real INT8 with calibration, not a rename |
 | API | FastAPI, uvicorn | 0.115.0 | Native WebSocket, typed request and response models |
 | Frontend | Next.js, React, Tailwind | 15.5, 19, 4.1 | App Router, CSS-variable theming |
-| Quality | pytest, ruff, black, Playwright | - | 63 API tests, 5 browser E2E tests |
+| Quality | pytest, ruff, black, Playwright | - | 129 tests (115 API + 14 ML), 5 browser E2E |
 
 ## Tests
 
 ```powershell
-python -m pytest apps/api/tests -q     # 63 tests, incl. a real model and a live WebSocket
+python -m pytest -q                    # 129 tests, incl. a real model and a live WebSocket
 python -m ruff check apps/api ml
 cd apps/web && npm run typecheck && npx playwright test
 ```

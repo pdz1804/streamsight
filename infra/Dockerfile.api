@@ -1,0 +1,70 @@
+# StreamSight API -- CPU-only image.
+#
+# There is deliberately no CUDA base image here. The measured result on this
+# project is that OpenVINO on the CPU clears 30 FPS at 640 px (see README), so
+# the CPU path is a real deployment target rather than a degraded fallback, and
+# it is the only one that runs anywhere without host driver coupling.
+#
+# Running GPU inference in a container is possible but is NOT what this file
+# does: it needs the NVIDIA Container Toolkit on the host, a matching CUDA base
+# image, `--gpus all`, and torch installed from the cu121 index instead of the
+# CPU one. That combination is untested here and is not the default.
+#
+# Build from the REPO ROOT, not from infra/:
+#   docker build -f infra/Dockerfile.api -t streamsight-api .
+
+FROM python:3.11-slim
+
+# opencv-python links against libGL and glib, and ffmpeg-backed decoding needs
+# the codec libraries; the slim image ships none of them.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgl1 \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+# torch comes from the CPU index first so the dependency resolver never pulls
+# the ~2.5 GB CUDA build. requirements.txt does not pin torch for exactly this
+# reason -- the wheel is a property of the target, not of the project.
+#
+# One honest wart: requirements.txt pins `onnxruntime-gpu`, which is what the
+# local GPU machine needs. In this image it installs, imports, and falls back to
+# the CPU execution provider; it is dead weight (~200 MB) but not a failure.
+COPY requirements.txt ./
+RUN pip install --upgrade pip \
+    && pip install torch==2.3.1 torchvision==0.18.1 \
+        --index-url https://download.pytorch.org/whl/cpu \
+    && pip install -r requirements.txt
+
+# The repo layout is load-bearing: app/config.py resolves REPO_ROOT four parents
+# up from itself and expects ml/models and apps/api/assets to sit beside it.
+COPY pyproject.toml ./
+COPY apps/api ./apps/api
+COPY ml ./ml
+
+# apps/api/data is gitignored runtime state (the SQLite log). It exists on a
+# developer machine and must not travel into the image.
+RUN rm -rf apps/api/data
+
+# Weights and the demo clip are gitignored (~5 MB + ~30 MB), so they are fetched
+# at build time rather than shipped. Drop this layer and mount ml/models plus
+# apps/api/assets instead if you would rather not bake media into the image.
+RUN python ml/scripts/fetch_assets.py
+
+EXPOSE 8100
+
+# Left on `auto`: with no GPU the fallback ladder skips every CUDA backend and
+# lands on fp32_cpu, which runs off the .pt weights fetched above. The faster
+# openvino_cpu backend needs an export step
+# (`python ml/quantization/export_engines.py --formats openvino_cpu`) whose
+# artifact is not baked in here; run it and mount ml/models to use it.
+ENV STREAMSIGHT_DEFAULT_PRECISION=auto
+
+CMD ["python", "-m", "uvicorn", "app.main:app", \
+     "--app-dir", "apps/api", "--host", "0.0.0.0", "--port", "8100"]

@@ -31,6 +31,8 @@ export interface FrameResponse {
   detections: Detection[];
   tracks: Track[];
   timing: FrameTiming;
+  /** Flat mirror of `timing.total_ms`, derived server-side so the two cannot drift. */
+  latency_ms: number;
   fps: number;
   precision: string;
   imgsz: number;
@@ -82,6 +84,8 @@ export interface MetricsResponse {
   track_count: number;
   unique_tracks: number;
   gpu: GpuInfo;
+  /** Flat mirror of `gpu.used_mb` for single-gauge dashboards; `gpu` stays authoritative. */
+  gpu_mem_mb: number;
   cpu_percent: number;
   ram_used_mb: number;
   process_ram_mb: number;

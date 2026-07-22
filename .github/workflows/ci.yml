@@ -1,0 +1,91 @@
+name: CI
+
+# The GPU is the interesting path but it is not the reproducible one: hosted
+# runners have no NVIDIA device and no model weights. CI therefore proves the
+# portable half -- that the code imports, lints, type-checks, builds, and that
+# every test which does not require an inference artifact passes on a bare
+# machine. The model-backed tier is marked `slow` and is deselected here; it is
+# run locally where weights exist.
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: api (python 3.11, cpu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      # opencv-python links against libGL and glib; the slim runner image has
+      # neither, and `import cv2` fails at collection time without them. The
+      # package was renamed on Ubuntu 24.04, hence the fallback.
+      - name: System libraries for OpenCV
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0t64 \
+            || sudo apt-get install -y libgl1 libglib2.0-0
+
+      # torch first, from the CPU index. requirements.txt does not pin torch
+      # precisely because the wheel differs per target; locally it is cu121,
+      # here it is CPU, which keeps the download ~200 MB instead of ~2.5 GB.
+      - name: Install torch (CPU wheels)
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch==2.3.1 torchvision==0.18.1 \
+            --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ruff
+        run: ruff check apps/api ml
+
+      - name: Black
+        run: black --check apps/api ml
+
+      # -m "not slow" drops apps/api/tests/test_api.py, the only module that
+      # boots the real runtime. The remaining tests are pure logic plus fixtures
+      # that skip themselves when no artifact is present.
+      # No path argument: a positional path overrides `testpaths` in pyproject.toml,
+      # which would silently drop ml/eval -- and that is where the 14 guards against
+      # the silent-zero-mAP conversions live. Those are exactly the tests CI must run.
+      - name: Pytest (fast tier)
+        run: pytest -q -m "not slow"
+
+  web:
+    name: web (node 22)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # The build only needs the API base URL to bake a string into the bundle;
+      # it never calls the API, so no service has to be running.
+      - name: Build
+        run: npm run build

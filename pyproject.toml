@@ -5,7 +5,7 @@ description = "Real-time object detection and multi-object tracking on a 4 GB la
 requires-python = ">=3.11"
 
 [tool.pytest.ini_options]
-testpaths = ["apps/api/tests", "tests"]
+testpaths = ["apps/api/tests", "tests", "ml/eval"]
 pythonpath = ["apps/api"]
 addopts = "-q --strict-markers"
 asyncio_default_fixture_loop_scope = "function"

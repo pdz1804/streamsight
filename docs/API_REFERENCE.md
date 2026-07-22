@@ -45,9 +45,13 @@ Response (abridged):
       "confidence": 0.91, "class_id": 0, "class_name": "person", "track_id": 1 }
   ],
   "timing": { "decode_ms": 0.0, "inference_ms": 96.3, "encode_ms": 0.0, "total_ms": 96.8 },
+  "latency_ms": 96.8,
   "fps": 13.4, "precision": "fp32_gpu", "imgsz": 640, "degraded_mode": false
 }
 ```
+
+`latency_ms` is a flat mirror of `timing.total_ms`, derived from it rather than stored separately so
+the two cannot disagree. Use whichever suits the caller; `timing` keeps the per-stage breakdown.
 
 `detections` holds every box in the frame. `tracks` holds only those ByteTrack has assigned a
 persistent id. A box without an id is still detected, it just has not survived enough frames to be
@@ -95,6 +99,9 @@ Rolling telemetry: `fps`, `fps_rolling`, `avg/p50/p95_latency_ms`, `frames_proce
 `track_count`, `unique_tracks`, `gpu`, `cpu_percent`, `ram_used_mb`, `process_ram_mb`,
 `degraded_mode`, `degrade_reason`, `precision`, `imgsz`, `uptime_s`.
 
+`gpu_mem_mb` is also served as a flat field, mirroring `gpu.used_mb` for single-gauge dashboards.
+Like `latency_ms` it is derived, not stored: the nested `gpu` block stays the source of truth.
+
 FPS is derived from frame arrival times rather than `1000 / latency`, so queueing and encode cost
 are included. It is the rate a viewer actually perceives.
 
@@ -124,6 +131,24 @@ unknown fields are rejected (`422`) so a typo cannot silently do nothing.
 ```json
 { "precision": "openvino_cpu", "imgsz": 640 }
 ```
+
+**Resolution.** `resolution` is accepted as a synonym for `imgsz`. Sending both is fine when they
+agree; sending different values is a contradiction and returns `422` rather than a guess.
+
+**Precision vocabulary.** `precision` takes either a concrete backend key (`int8_trt`, `fp16_trt`,
+`fp16_onnx`, `fp32_gpu`, `openvino_cpu`, `int8_onnx_cpu`, `fp32_cpu`) or one of the abstract words
+`int8` | `fp16` | `fp32`. An abstract word resolves to the first backend on its list that is
+actually runnable on this host at the requested resolution:
+
+| Word | Tried in order |
+|---|---|
+| `int8` | `int8_trt` → `int8_onnx_cpu` |
+| `fp16` | `fp16_trt` → `fp16_onnx` |
+| `fp32` | `fp32_gpu` → `fp32_cpu` |
+
+So `int8` lands on TensorRT where it exists and on the ONNX CPU graph where it does not. If no
+candidate can run, the `409` names every one that was tried and why — for example, `fp16` on a
+machine with no NVIDIA GPU, since both FP16 artifacts are CUDA-only.
 
 Track identities reset across a swap: ids from the previous model are not comparable to the new
 one's. If the requested backend cannot be loaded, the previously working configuration is restored

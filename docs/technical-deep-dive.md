@@ -321,7 +321,7 @@ requirements files, never in a request handler.
 
 ## 11. Testing
 
-**63 API tests.** Split into a fast pure-logic tier (parsing, registry rules, decode, telemetry
+**115 API tests plus 14 ML-conversion tests.** Split into a fast pure-logic tier (parsing, registry rules, decode, telemetry
 bounds, capture semantics) and a slower tier that boots the real model through the FastAPI lifespan.
 The slow tier proves the model loads, serves, hot-swaps and streams *on this machine* — including a
 live WebSocket test that asserts frames arrive with real overlays and monotonic ids.
@@ -373,7 +373,7 @@ A test that only checks a heading exists would pass against a completely broken 
   OpenVINO CPU path cleared real-time at 98.4% recall.
 - Profiled and optimised the streaming path from **8.8 to 13.4 FPS** (server latency 101 ms -> 48 ms)
   by eliminating per-frame syscalls and moving downscaling ahead of inference.
-- Shipped with **63 API tests and 5 browser E2E tests** asserting observable behaviour, plus
+- Shipped with **129 automated tests (115 API, 14 ML) and 5 browser E2E tests** asserting observable behaviour, plus
   documented degradation drills exercisable through the API.
 
 ## 14. Skills demonstrated

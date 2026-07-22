@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 
 BBox = tuple[float, float, float, float]
 
@@ -64,6 +64,17 @@ class FrameResponse(BaseModel):
     precision: str
     imgsz: int
     degraded_mode: bool
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def latency_ms(self) -> float:
+        """Flat mirror of ``timing.total_ms``.
+
+        Derived rather than stored so the two can never disagree: the nested
+        breakdown stays the single source of truth while callers that only want
+        one number do not have to reach into it.
+        """
+        return self.timing.total_ms
 
 
 class StreamFrame(BaseModel):
@@ -126,6 +137,16 @@ class MetricsResponse(BaseModel):
     imgsz: int
     uptime_s: float
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def gpu_mem_mb(self) -> int:
+        """Flat mirror of ``gpu.used_mb`` for dashboards that want a single gauge.
+
+        Derived from the nested block for the same reason as ``latency_ms``:
+        one owner of the value, no chance of the two drifting apart.
+        """
+        return self.gpu.used_mb
+
 
 class BackendInfo(BaseModel):
     """One selectable inference backend and whether it can run here."""
@@ -157,12 +178,44 @@ class ModelConfigResponse(BaseModel):
 
 
 class ModelConfigRequest(BaseModel):
-    """Hot-swap request. Omitted fields keep their current value."""
+    """Hot-swap request. Omitted fields keep their current value.
+
+    ``resolution`` is an accepted synonym for ``imgsz`` so the endpoint speaks the
+    vocabulary of the product spec as well as the one the codebase and the web
+    client already use. ``extra="forbid"`` is kept: a typo must still 422 rather
+    than silently do nothing.
+
+    ``precision`` accepts both concrete backend keys (``fp32_gpu``) and the
+    spec's abstract words (``int8``/``fp16``/``fp32``); the abstract form is
+    resolved against what this host can actually run, in
+    :mod:`app.runtime`.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     precision: str | None = None
-    imgsz: int | None = None
+    # Constrained positive: without `gt=0`, a `0` is falsy and the runtime's
+    # "keep the current value" fallback swallows it, returning 200 having changed
+    # nothing -- while an out-of-range value like 123 correctly 409s. Same class
+    # of mistake, two different outcomes, is worse than either.
+    imgsz: int | None = Field(default=None, gt=0)
+    resolution: int | None = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def _fold_resolution_into_imgsz(self) -> ModelConfigRequest:
+        """Collapse the alias so downstream code only ever reads ``imgsz``.
+
+        Sending both with different values is a contradiction the caller has to
+        resolve, not something to guess at, so it is refused.
+        """
+        if self.resolution is None:
+            return self
+        if self.imgsz is not None and self.imgsz != self.resolution:
+            raise ValueError(
+                f"imgsz ({self.imgsz}) and resolution ({self.resolution}) disagree; send one"
+            )
+        self.imgsz = self.resolution
+        return self
 
 
 class HealthResponse(BaseModel):

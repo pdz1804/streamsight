@@ -1,0 +1,36 @@
+seed: 42
+dry_run: true
+model:
+  weights: yolo11n.pt
+  imgsz: 640
+data:
+  yaml: ml/data/processed/coco6.yaml
+  classes:
+  - person
+  - bicycle
+  - car
+  - motorcycle
+  - bus
+  - truck
+train:
+  epochs: 10
+  batch: 4
+  lr0: 0.01
+  lrf: 0.01
+  optimizer: auto
+  patience: 20
+  workers: 2
+  device: 0
+  checkpoint_every: 5
+  resume: false
+  project: ml/train/runs
+  name: streamsight-yolo11n
+gate:
+  map_drop_max: 0.03
+  mot_idf1_min: 0.6
+mlflow:
+  tracking_uri: http://127.0.0.1:5000
+  experiment: streamsight
+  registry_model: streamsight-detector
+  tracker_quality_model: streamsight-tracker-quality
+  enabled: true

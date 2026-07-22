@@ -69,7 +69,13 @@ export const api = {
 
   modelConfig: () => request<ModelConfigResponse>("/config/model"),
 
-  setModelConfig: (payload: { precision?: string; imgsz?: number }) =>
+  /**
+   * Hot-swap the model. `precision` accepts a concrete backend key (`fp32_gpu`)
+   * or an abstract word (`int8` | `fp16` | `fp32`), which the server resolves
+   * against what this host can actually run. `resolution` is a server-side
+   * synonym for `imgsz`; send one or the other, never both with different values.
+   */
+  setModelConfig: (payload: { precision?: string; imgsz?: number; resolution?: number }) =>
     request<ModelConfigResponse>("/config/model", {
       method: "POST",
       body: JSON.stringify(payload),

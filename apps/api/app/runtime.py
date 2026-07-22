@@ -45,6 +45,18 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_IMGSZ: tuple[int, ...] = (640, 480, 320)
 
+#: The product spec talks about precision in the abstract ("int8"), while the
+#: backend registry is concrete (an INT8 TensorRT engine and an INT8 ONNX CPU
+#: graph are different artifacts with different requirements). Each abstract word
+#: therefore maps to an ordered preference list, fastest first, and is resolved
+#: against what this particular host can actually run. Concrete keys stay valid,
+#: so nothing that worked before this alias existed stops working.
+PRECISION_ALIASES: dict[str, tuple[str, ...]] = {
+    "int8": ("int8_trt", "int8_onnx_cpu"),
+    "fp16": ("fp16_trt", "fp16_onnx"),
+    "fp32": ("fp32_gpu", "fp32_cpu"),
+}
+
 
 def _short(exc: BaseException, limit: int = 200) -> str:
     """One-line exception text; backend errors can be paragraphs of driver detail."""
@@ -303,6 +315,44 @@ class InferenceRuntime:
 
     # ------------------------------------------------------------- hot swap
 
+    def _resolve_precision(self, requested: str, imgsz: int) -> str:
+        """Turn an abstract precision word into a concrete backend key.
+
+        Concrete keys pass straight through, so this only ever widens what the
+        endpoint accepts. Resolution is host- and resolution-aware: an INT8
+        request on a machine with no TensorRT should land on the INT8 CPU graph
+        rather than fail, which is the whole point of asking for a precision
+        instead of naming an artifact.
+
+        Raises:
+            BackendUnavailableError: none of the candidates for this word can run
+                here, with every candidate and its reason named.
+        """
+        candidates = PRECISION_ALIASES.get(requested)
+        if candidates is None:
+            return requested
+
+        runnable_keys = {b.key for b in candidate_chain(None, self._settings, self._gpu.available)}
+        rejected: list[str] = []
+        for key in candidates:
+            backend = BACKENDS[key]
+            if key not in runnable_keys:
+                _, why = availability(backend, self._settings, self._gpu.available)
+                rejected.append(f"{key} ({why})")
+                continue
+            if not backend.supports_imgsz(imgsz):
+                rejected.append(f"{key} (exported at {backend.export_imgsz} px, not {imgsz})")
+                continue
+            failure = self._unusable.get((key, imgsz))
+            if failure:
+                rejected.append(f"{key} (already failed: {failure})")
+                continue
+            return key
+
+        raise BackendUnavailableError(
+            f"no {requested} backend can run here at {imgsz} px; tried " + ", ".join(rejected)
+        )
+
     def switch(self, precision: str | None, imgsz: int | None) -> ModelConfigResponse:
         """Rebuild the detector with a new precision and/or resolution.
 
@@ -311,13 +361,22 @@ class InferenceRuntime:
         """
         with self._lock:
             current = self._detector
-            target_precision = precision or (current.backend.key if current else "auto")
-            target_imgsz = imgsz or (current.imgsz if current else self._settings.default_imgsz)
+            # `is None`, not truthiness: an explicitly supplied 0 must reach the
+            # supported-size check and be refused, not be mistaken for "omitted".
+            target_precision = (
+                precision if precision is not None else (current.backend.key if current else "auto")
+            )
+            target_imgsz = (
+                imgsz
+                if imgsz is not None
+                else (current.imgsz if current else self._settings.default_imgsz)
+            )
 
             if target_imgsz not in SUPPORTED_IMGSZ:
                 raise BackendUnavailableError(
                     f"unsupported resolution {target_imgsz}; choose one of {list(SUPPORTED_IMGSZ)}"
                 )
+            target_precision = self._resolve_precision(target_precision, target_imgsz)
             if target_precision not in BACKENDS:
                 raise BackendUnavailableError(f"unknown precision '{target_precision}'")
 

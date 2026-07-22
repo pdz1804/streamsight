@@ -1,0 +1,83 @@
+# StreamSight training + promotion-gate configuration (Hydra, NFR-4).
+#
+# One file holds both the training hyperparameters and the gate thresholds on
+# purpose: the trainer reads it through @hydra.main, and
+# ml/quantization/benchmark_precision.py reads the same file through OmegaConf.
+# If the accepted accuracy drop lived in two places it would eventually mean two
+# different things.
+#
+# Override anything from the command line, e.g.
+#   python ml/train/trainer.py train.epochs=20 train.batch=8
+#   python ml/train/trainer.py --dry-run
+
+defaults:
+  - _self_
+
+# Seeded so a re-run on the same Colab image reproduces the same split and
+# augmentation sequence; NFR-4 treats this as part of the pinned environment.
+seed: 42
+dry_run: false
+
+model:
+  # Fine-tune, never from scratch: full-COCO training is ~50-75 GPU-h and is out
+  # of scope (PRD NG1 / phase-03).
+  weights: yolo11n.pt
+  imgsz: 640
+
+data:
+  # Written by ml/data/scripts/split_dataset.py, relative to the repo root.
+  #
+  # This yaml is built from val2017 (550 images) and exists to exercise the local
+  # training path end to end, not to produce a usable model. A real fine-tune uses
+  # train2017 on a cloud GPU: ml/scripts/train_colab.py builds that dataset on the
+  # Colab VM, because pulling train2017 (~19 GB) to a 4 GB laptop to then not train
+  # on it would be pointless.
+  yaml: ml/data/processed/coco_person_vehicle/calib.yaml
+  # The deployed detector is 6-class. Every mAP figure from Phase 3 on -- both
+  # the FP32 baseline and the INT8 candidate -- must be measured on this exact
+  # set, or the gate's absolute delta compares two different problems.
+  classes: [person, bicycle, car, motorcycle, bus, truck]
+
+train:
+  epochs: 10
+  # batch 4 at 640 px is what fits the free Colab T4 alongside the augmentation
+  # pipeline; larger batches OOM before the first validation pass.
+  batch: 4
+  lr0: 0.01
+  lrf: 0.01
+  optimizer: auto
+  patience: 20
+  workers: 2
+  device: 0
+  # Colab sessions are reclaimed without warning. Checkpointing every 5 epochs to
+  # Drive bounds the loss to one checkpoint interval rather than the whole run.
+  checkpoint_every: 5
+  resume: false
+  project: ml/train/runs
+  name: streamsight-yolo11n
+
+gate:
+  # PRD FR-16: INT8 mAP50-95 may fall at most this much in ABSOLUTE terms below
+  # the locally-measured FP32 baseline on the same class set.
+  map_drop_max: 0.03
+  # Tracking quality target. Read by the gate but deliberately registered under a
+  # separate model name -- it does not veto engine promotion.
+  mot_idf1_min: 0.60
+
+mlflow:
+  # Must be a database-backed server: the bare mlruns/ file store has no Model
+  # Registry, so register_model/transition_model_version_stage cannot run there.
+  # Overridden by the MLFLOW_TRACKING_URI environment variable when set.
+  tracking_uri: http://127.0.0.1:5000
+  experiment: streamsight
+  registry_model: streamsight-detector
+  tracker_quality_model: streamsight-tracker-quality
+  # Colab has no reachable local server; the notebook logs to its own ephemeral
+  # store and the deliverable is best.pt. Registration happens locally only.
+  enabled: true
+
+hydra:
+  run:
+    dir: ml/train/outputs/${now:%Y%m%d-%H%M%S}
+  job:
+    chdir: false

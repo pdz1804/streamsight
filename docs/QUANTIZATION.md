@@ -97,6 +97,30 @@ up 5 points of recall. On an i9-12900H, OpenVINO's optimized kernels beat ONNX R
 ones. On a memory-constrained edge target with no OpenVINO support the trade flips, which is exactly
 why the answer is measured per-target rather than assumed.
 
+## Per-target fit
+
+Which export to reach for, and what each one actually cost here. Every number in this table comes
+from `ml/eval/reports/frontier.json` (200 frames of 1080p footage, full pipeline including decode,
+letterbox, inference and ByteTrack association) or from the artifact sizes above. Cells with no
+number are cells where nothing was measured - they say so rather than carrying an estimate.
+
+Throughput and recall are at **640 px**. Recall is against the `fp32_gpu@640` baseline, matched
+greedily one-to-one on class and IoU >= 0.5, as described in `docs/BENCHMARKS.md`. Sizes are MiB.
+The host is an RTX A1000 Laptop GPU (4096 MiB) with an Intel i9-12900H.
+
+| Export | Target hardware | Artifact | Throughput | Recall vs FP32 | Choose it when | On this host |
+|---|---|---|---|---|---|---|
+| **ONNX FP16** | NVIDIA GPU through ONNX Runtime's CUDA provider; the graph itself is portable to any ORT-supported runtime | 5.14 MB | not measured | not measured | You need a portable graph and a GPU runtime that is not TensorRT, or half the FP32 file size for the same architecture | **Built, does not run.** The frontier sweep failed to create the CUDA provider: `CUDA_PATH is set but CUDA wasnt able to be loaded`. Not diagnosed further - `fp32_gpu` covers the GPU path and is faster to reach |
+| **ONNX INT8** | x86 CPU through ORT's CPU provider (`QLinearConv`); the smallest artifact, so also the memory-constrained target | 4.36 MB | 15.1 FPS | 93.3% | The target has no OpenVINO support and artifact size or memory is the binding constraint | **Built and running.** In the backend ladder as `int8_onnx_cpu` |
+| **OpenVINO** | Intel CPU (and Intel iGPU/NPU through the same IR) | 5.45 MB | 35.8 FPS | 98.4% | The target is an Intel CPU. On this machine it is the best CPU option by a wide margin - 2.4x the INT8 throughput with 5 points more recall | **Built and running.** In the ladder as `openvino_cpu`; reaches 35.8 FPS with no GPU at all |
+| **TensorRT** | NVIDIA GPU with CUDA 12.x | not built on this host | not built on this host | not built on this host | The target is an NVIDIA GPU on a platform where TensorRT 10 installs - it is the fastest NVIDIA path and the PRD's intended INT8 route | **Not built.** TensorRT 10 has no installable Windows wheel; TensorRT 11 removes an API Ultralytics 8.3.37 calls, and the 11 path needs ModelOpt, which needs torch >= 2.8 against a pinned torch 2.3.1 stack. Full reasoning below |
+
+For reference on the same run, the unquantized baselines: `fp32_gpu` 48.5 FPS at 5.35 MB, `fp32_cpu`
+15.4 FPS at 5.35 MB. The honest summary of this table on *this* hardware is that quantization did
+not win: FP32 on the GPU is the fastest path, OpenVINO is the best CPU path, and INT8 only pays off
+on a target that has neither - which is precisely why the matrix reports per-target rather than
+declaring a winner.
+
 ## TensorRT
 
 Not built on this machine, and the reason is a genuine toolchain dead end rather than an oversight:
