@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+/*
+ * Theme tokens.
+ *
+ * Both modes are first-class: the console is used in a bright office and in a
+ * dark lab, and detection overlays have to stay legible in either. Light mode is
+ * not a washed-out inversion of dark, it is tuned separately.
+ *
+ * Shape rule for the whole app: 8px radius on every surface, control and input;
+ * full-pill reserved exclusively for status chips. Nothing else is rounded.
+ */
+
+:root {
+  color-scheme: light;
+
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #eceef1;
+  --line: #dcdfe4;
+  --line-strong: #c3c8d0;
+
+  --text: #14181d;
+  --text-dim: #4d5763;
+  --text-mute: #79838f;
+
+  --accent: #1668d6;
+  --accent-hover: #0f57b8;
+  --accent-fg: #ffffff;
+  --accent-soft: rgb(22 104 214 / 0.09);
+
+  --ok: #1a7f4b;
+  --warn: #96650a;
+  --danger: #c02b1d;
+
+  --stage: #e7e9ed;
+
+  --radius: 8px;
+  --shadow: 0 1px 2px rgb(20 24 29 / 0.06), 0 8px 24px rgb(20 24 29 / 0.05);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0b0e11;
+  --surface: #12161a;
+  --surface-2: #171c21;
+  --line: #232a31;
+  --line-strong: #323b45;
+
+  --text: #e7ecf1;
+  --text-dim: #9aa6b2;
+  --text-mute: #6b7783;
+
+  --accent: #4d9dff;
+  --accent-hover: #6fb1ff;
+  --accent-fg: #06101d;
+  --accent-soft: rgb(77 157 255 / 0.14);
+
+  --ok: #3ecf8e;
+  --warn: #e0a63c;
+  --danger: #f3776a;
+
+  --stage: #06080a;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 28px rgb(0 0 0 / 0.35);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-text-mute: var(--text-mute);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-stage: var(--stage);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  --radius-panel: var(--radius);
+}
+
+/*
+ * A single scroll container. The shell owns the viewport and each region scrolls
+ * internally, which avoids the double-scrollbar that appears when both the body
+ * and an inner pane are scrollable.
+ */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers are tabular everywhere so live telemetry does not jitter as it updates. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Visible, consistent keyboard focus on every interactive element. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* Thin scrollbars inside panes; the chrome should not compete with the video. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.live-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}

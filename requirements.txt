@@ -1,0 +1,50 @@
+# StreamSight Python dependencies.
+#
+# One environment serves the API and the ml/ tooling. A split was considered and
+# rejected: ultralytics depends on torch, so an API-only venv downloads the same
+# ~2.5 GB anyway and the separation buys nothing but disk.
+#
+# Install torch FIRST, from the CUDA 12.1 index, then the rest:
+#
+#   pip install torch==2.3.1 torchvision==0.18.1 --index-url https://download.pytorch.org/whl/cu121
+#   pip install -r requirements.txt
+
+# --- detection and tracking -------------------------------------------------
+ultralytics==8.4.104        # 8.3.x cannot export against TensorRT 11
+lap>=0.5.12                 # linear assignment, required by ByteTrack
+
+# --- inference runtimes -----------------------------------------------------
+onnxruntime-gpu==1.18.1     # 1.27 needs cuDNN 9; torch cu121 ships cuDNN 8.9
+openvino==2024.6.0          # 2026.x removed openvino.runtime, which ultralytics calls
+onnx==1.16.2
+onnxslim
+
+# --- api --------------------------------------------------------------------
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+starlette==0.38.0
+pydantic==2.9.2
+pydantic-settings==2.6.1
+python-multipart==0.0.12
+
+# --- vision and telemetry ---------------------------------------------------
+opencv-python==4.10.0.84
+numpy==1.26.4               # torch 2.3.1 is built against numpy 1.x
+psutil==6.1.0
+nvidia-ml-py==12.560.30     # GPU memory; psutil has no GPU API
+
+# --- evaluation and experiment tracking -------------------------------------
+mlflow==2.17.0
+hydra-core==1.3.2           # 1.3.5 does not exist
+pycocotools==2.0.8
+motmetrics==1.2.0
+matplotlib==3.9.2
+pandas==2.2.3
+
+# --- quality ----------------------------------------------------------------
+pytest==8.3.4
+pytest-cov==6.0.0
+pytest-asyncio==0.24.0
+httpx==0.27.2
+ruff==0.8.4
+black==24.10.0

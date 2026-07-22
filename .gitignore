@@ -1,0 +1,51 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+apps/web/dev.log
+apps/web/.playwright-mcp/
+playwright-report/
+test-results/
+
+# Model artifacts and media: reproducible via ml/scripts/fetch_assets.py and
+# ml/quantization/export_engines.py, and far too large for git.
+ml/models/weights/
+ml/models/engines/
+apps/api/assets/*.mp4
+apps/api/assets/*.avi
+ml/data/raw/
+ml/data/processed/
+# Ultralytics downloads calibration datasets here on demand
+datasets/
+*.engine
+*.onnx
+*.pt
+
+# Runtime state
+apps/api/data/
+mlflow.db
+mlartifacts/
+mlruns/
+*.log
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.claude/
