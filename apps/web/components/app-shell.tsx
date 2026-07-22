@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * Application chrome: brand, navigation, live backend status, theme control.
@@ -34,15 +34,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden">
-      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-line bg-surface px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="font-mono text-[15px] font-semibold tracking-tight text-text">
-            StreamSight
+    <div className="relative z-10 flex h-[100dvh] flex-col overflow-hidden">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-[var(--radius)] focus:bg-accent focus:px-3 focus:py-2 focus:text-[13px] focus:text-accent-fg"
+      >
+        Skip to content
+      </a>
+
+      <header className="flex h-16 shrink-0 items-center gap-4 border-b border-line bg-surface/85 px-4 backdrop-blur-md md:px-6">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="StreamSight home">
+          <span
+            className="grid size-7 place-items-center rounded-[7px] bg-accent text-accent-fg shadow-[var(--shadow-sm)]"
+            aria-hidden="true"
+          >
+            <Broadcast size={15} weight="fill" />
           </span>
+          <span className="text-[15px] font-semibold tracking-tight text-text">StreamSight</span>
         </Link>
 
-        <nav aria-label="Primary" className="ml-2 flex items-center gap-1 overflow-x-auto">
+        <nav
+          aria-label="Primary"
+          className="ml-3 flex items-center gap-1 rounded-[var(--radius)] border border-line bg-surface-2 p-1"
+        >
           {NAV.map(({ href, label, icon: Icon }) => {
             const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
@@ -50,10 +64,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`inline-flex items-center gap-2 whitespace-nowrap rounded-[var(--radius)] px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                className={`inline-flex items-center gap-2 whitespace-nowrap rounded-[6px] px-3 py-1.5 text-[13px] font-medium transition-all duration-200 ${
                   active
-                    ? "bg-accent-soft text-accent"
-                    : "text-text-dim hover:bg-surface-2 hover:text-text"
+                    ? "bg-surface text-text shadow-[var(--shadow-sm)]"
+                    : "text-text-dim hover:text-text"
                 }`}
               >
                 <Icon size={16} weight={active ? "fill" : "regular"} />
@@ -69,7 +83,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
+      <main id="main" className="min-h-0 flex-1 overflow-y-auto">
+        {children}
+      </main>
     </div>
   );
 }
@@ -116,3 +132,4 @@ function BackendStatus() {
     </span>
   );
 }
+

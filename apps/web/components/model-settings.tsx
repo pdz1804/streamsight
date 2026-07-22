@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * Model selector and reliability drill.
@@ -74,9 +74,9 @@ export function ModelSettings() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 md:p-6">
+    <div className="mx-auto flex max-w-[1500px] flex-col gap-5 p-5 md:p-7">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-[15px] font-semibold text-text">Inference configuration</h1>
+        <h1 className="text-[22px] font-semibold tracking-tight text-text">Inference configuration</h1>
         {config.degraded_mode ? <Chip tone="warn">Degraded</Chip> : <Chip tone="ok">Nominal</Chip>}
         <span className="font-mono text-[11px] text-text-mute">
           {config.model_file} on {config.device}
@@ -94,9 +94,9 @@ export function ModelSettings() {
         </p>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <Panel title="Backend">
-          <ul className="divide-y divide-line">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <Panel title="Backend" index={0}>
+          <ul className="flex flex-col gap-1 px-2 pb-4">
             {config.available_backends.map((backend) => {
               const active = backend.precision === config.precision;
               return (
@@ -105,9 +105,11 @@ export function ModelSettings() {
                     type="button"
                     disabled={!backend.available || busy || active}
                     onClick={() => void apply({ precision: backend.precision })}
-                    className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors ${
-                      active ? "bg-accent-soft" : "hover:bg-surface-2"
-                    } disabled:cursor-not-allowed disabled:hover:bg-transparent`}
+                    className={`flex w-full items-start gap-3 rounded-[var(--radius)] border px-3.5 py-3 text-left transition-all duration-200 ${
+                      active
+                        ? "border-accent/40 bg-accent-soft shadow-[var(--shadow-sm)]"
+                        : "border-transparent hover:border-line hover:bg-surface-2"
+                    } disabled:cursor-not-allowed disabled:hover:border-transparent disabled:hover:bg-transparent`}
                   >
                     <span
                       aria-hidden="true"
@@ -147,8 +149,8 @@ export function ModelSettings() {
           </ul>
         </Panel>
 
-        <div className="flex flex-col gap-4">
-          <Panel title="Resolution">
+        <div className="flex flex-col gap-5">
+          <Panel title="Resolution" index={1}>
             <div className="p-4">
               <Field
                 label="Inference size"
@@ -171,7 +173,7 @@ export function ModelSettings() {
             </div>
           </Panel>
 
-          <Panel title="Reliability drill">
+          <Panel title="Reliability drill" index={2}>
             <div className="flex flex-col gap-3 p-4">
               <p className="text-[12px] leading-relaxed text-text-dim">
                 Forces one step down the degradation ladder, exactly as a CUDA out-of-memory
@@ -189,3 +191,4 @@ export function ModelSettings() {
     </div>
   );
 }
+

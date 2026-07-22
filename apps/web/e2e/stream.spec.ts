@@ -74,7 +74,7 @@ test("metrics dashboard reports live telemetry", async ({ page }) => {
   await page.goto("/metrics");
   await expect(page.getByRole("heading", { name: "Runtime telemetry" })).toBeVisible();
 
-  for (const panel of ["Frames per second", "Latency", "Tracking", "Host"]) {
+  for (const panel of ["Throughput", "Latency p95", "GPU memory", "Tracking", "Host"]) {
     await expect(page.getByRole("heading", { name: panel })).toBeVisible();
   }
   await expect(page.getByText(/Nominal|Degraded/)).toBeVisible();

@@ -2,6 +2,10 @@
 
 /**
  * The live viewer: source selection, the annotated stream, and its telemetry.
+ *
+ * The right column leads with throughput as a single large figure, because that
+ * is the number being watched; the timing breakdown that explains it sits below
+ * at supporting weight.
  */
 
 import { Play, Stop, UploadSimple } from "@phosphor-icons/react/dist/ssr";
@@ -51,9 +55,10 @@ export function LiveConsole() {
   }, [telemetry.fps, telemetry.frameId]);
 
   const streaming = connected && phase === "streaming";
+  const busy = streaming || phase === "opening";
 
   const handleToggle = () => {
-    if (streaming || phase === "opening") {
+    if (busy) {
       stop();
       return;
     }
@@ -79,7 +84,7 @@ export function LiveConsole() {
   const fpsTone = telemetry.fps >= FPS_TARGET ? "ok" : telemetry.fps > 0 ? "warn" : "neutral";
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 p-4 md:p-6">
+    <div className="mx-auto flex h-full min-h-0 max-w-[1600px] flex-col gap-4 p-4 md:p-6">
       <div className="flex flex-wrap items-center gap-3">
         <label htmlFor="source" className="sr-only">
           Video source
@@ -89,7 +94,7 @@ export function LiveConsole() {
           value={selected}
           onChange={(event) => setSelected(event.target.value)}
           disabled={streaming}
-          className="h-9 min-w-[220px] rounded-[var(--radius)] border border-line bg-surface px-3 text-[13px] text-text disabled:opacity-50"
+          className="h-9 min-w-[230px] rounded-[var(--radius)] border border-line bg-surface px-3 text-[13px] text-text shadow-[var(--shadow-sm)] transition-colors hover:border-line-strong disabled:opacity-50"
         >
           {sources.length === 0 ? <option value="">no sources found</option> : null}
           {sources.map((source) => (
@@ -101,8 +106,8 @@ export function LiveConsole() {
         </select>
 
         <Button variant="primary" onClick={handleToggle} disabled={!selected}>
-          {streaming || phase === "opening" ? <Stop size={15} weight="fill" /> : <Play size={15} weight="fill" />}
-          {streaming || phase === "opening" ? "Stop stream" : "Start stream"}
+          {busy ? <Stop size={15} weight="fill" /> : <Play size={15} weight="fill" />}
+          {busy ? "Stop stream" : "Start stream"}
         </Button>
 
         <Button onClick={() => fileInputRef.current?.click()} disabled={uploading || streaming}>
@@ -134,26 +139,59 @@ export function LiveConsole() {
 
       {error ? <ErrorNote>{error}</ErrorNote> : null}
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
         <VideoStage
           canvasRef={canvasRef}
           phase={phase}
           message={message}
           hasFrame={telemetry.frameId > 0}
+          precision={telemetry.precision}
+          imgsz={telemetry.imgsz}
+          resolution={
+            telemetry.width && telemetry.height
+              ? `${telemetry.width}x${telemetry.height}`
+              : undefined
+          }
         />
 
-        <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-          <Panel
-            className="shrink-0"
-            title="Throughput"
-            action={
-              <span className="font-mono text-[11px] text-text-mute">
-                {telemetry.precision || "-"} · {telemetry.imgsz || "-"}px
+        <div className="flex min-h-0 flex-col gap-5 overflow-y-auto pb-1">
+          {/* Headline figure, then the breakdown that explains it. */}
+          <section className="surface-panel rise shrink-0 overflow-hidden" style={{ "--i": 0 } as React.CSSProperties}>
+            <div className="relative flex items-start justify-between gap-3 px-5 pt-4">
+              <div>
+                <h2 className="text-[11px] font-medium uppercase tracking-[0.09em] text-text-mute">
+                  Throughput
+                </h2>
+                <p className="mt-2 flex items-baseline gap-1.5">
+                  <span
+                    className={`display-num font-mono text-[44px] font-semibold ${
+                      fpsTone === "ok"
+                        ? "text-ok"
+                        : fpsTone === "warn"
+                          ? "text-warn"
+                          : "text-text"
+                    }`}
+                  >
+                    {telemetry.fps.toFixed(1)}
+                  </span>
+                  <span className="text-[13px] font-medium text-text-mute">fps</span>
+                </p>
+              </div>
+              <span className="mt-1 font-mono text-[11px] text-text-mute">
+                target {FPS_TARGET}
               </span>
-            }
-          >
-            <div className="divide-y divide-line">
-              <Stat label="FPS" value={telemetry.fps.toFixed(1)} tone={fpsTone} />
+            </div>
+
+            <div className="relative mt-3">
+              <Sparkline
+                values={fpsHistory}
+                label="Frames per second"
+                floorAt={FPS_TARGET}
+                height={56}
+              />
+            </div>
+
+            <div className="relative flex flex-col gap-0.5 px-2 pb-3 pt-1">
               <Stat
                 label="Server latency"
                 value={telemetry.serverLatencyMs.toFixed(1)}
@@ -171,18 +209,13 @@ export function LiveConsole() {
                 value={telemetry.clientLatencyMs.toFixed(0)}
                 unit="ms"
                 tone={telemetry.clientLatencyMs <= 100 ? "ok" : "warn"}
-                hint="Server send timestamp to browser receipt. Localhost clocks, so this is indicative."
+                hint="Server send timestamp to browser receipt. Localhost clocks, so indicative."
               />
             </div>
-            <div className="border-t border-line px-3 pb-3 pt-3">
-              <Sparkline values={fpsHistory} label="Frames per second" floorAt={FPS_TARGET} />
-              <p className="mt-1.5 px-1 text-[10px] leading-normal text-text-mute">
-                dashed line marks the {FPS_TARGET} FPS target
-              </p>
-            </div>
-          </Panel>
+          </section>
 
           <Panel
+            index={1}
             className="min-h-[220px] flex-1"
             title="Tracks"
             action={

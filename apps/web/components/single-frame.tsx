@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * Single-image detection.
@@ -70,9 +70,9 @@ export function SingleFrame() {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 md:p-6">
+    <div className="mx-auto flex max-w-[1500px] flex-col gap-5 p-5 md:p-7">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-[15px] font-semibold text-text">Single frame detection</h1>
+        <h1 className="text-[22px] font-semibold tracking-tight text-text">Single frame detection</h1>
         <Button variant="primary" onClick={() => fileInputRef.current?.click()} disabled={busy}>
           <UploadSimple size={15} />
           {busy ? "Detecting" : "Choose image"}
@@ -91,8 +91,8 @@ export function SingleFrame() {
 
       {error ? <ErrorNote>{error}</ErrorNote> : null}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="flex min-h-[380px] items-center justify-center overflow-hidden rounded-[var(--radius)] border border-line bg-stage">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="rise flex min-h-[420px] items-center justify-center overflow-hidden rounded-[var(--radius-lg)] border border-line bg-stage shadow-[var(--shadow-lg)]">
           {result ? (
             <canvas ref={canvasRef} className="max-h-[68vh] max-w-full object-contain" />
           ) : (
@@ -104,10 +104,10 @@ export function SingleFrame() {
           )}
         </div>
 
-        <div className="flex flex-col gap-4">
-          <Panel title="Result">
+        <div className="flex flex-col gap-5">
+          <Panel title="Result" index={1}>
             {result ? (
-              <div className="divide-y divide-line">
+              <div className="flex flex-col gap-0.5 px-2 pb-4">
                 <Stat label="Detections" value={result.detections.length} />
                 <Stat label="Tracks" value={result.tracks.length} />
                 <Stat label="Inference" value={result.timing.inference_ms.toFixed(1)} unit="ms" />
@@ -123,7 +123,7 @@ export function SingleFrame() {
           </Panel>
 
           {result ? (
-            <Panel title="Objects" bodyClassName="max-h-[40vh] overflow-y-auto">
+            <Panel title="Objects" index={2} bodyClassName="max-h-[42vh] overflow-y-auto">
               <TrackLegend tracks={result.tracks.length ? result.tracks : toTracks(result)} />
             </Panel>
           ) : null}
@@ -174,3 +174,4 @@ function readableOn(hex: string): string {
   const luminance = 0.299 * red + 0.587 * green + 0.114 * blue;
   return luminance > 140 ? "#000000" : "#ffffff";
 }
+
