@@ -37,6 +37,10 @@ mlflow.db
 mlartifacts/
 mlruns/
 *.log
+# Hydra writes a timestamped run directory on every invocation, including
+# --dry-run. These are execution records, not source.
+ml/train/outputs/
+ml/quantization/reports/
 
 # Environment and secrets
 .env
