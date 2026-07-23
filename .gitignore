@@ -21,6 +21,10 @@ test-results/
 # ml/quantization/export_engines.py, and far too large for git.
 ml/models/weights/
 ml/models/engines/
+# Artifacts downloaded from the MLflow registry by app/registry.py. Derived
+# data with a registry as its source of truth, so committing it would be a
+# second, staler copy of something already versioned elsewhere.
+ml/models/_mlflow_cache/
 apps/api/assets/*.mp4
 apps/api/assets/*.avi
 ml/data/raw/

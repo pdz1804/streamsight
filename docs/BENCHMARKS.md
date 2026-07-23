@@ -73,7 +73,7 @@ than OpenVINO and gives up 5 points of recall for a 19% smaller artifact.
 ## Viewer throughput is a different number
 
 The table above measures the detect-and-track pipeline. The browser viewer is slower because
-annotation, JPEG encoding, base64 and WebSocket transport are on its critical path.
+annotation, JPEG encoding and WebSocket transport are on its critical path.
 
 Measured per stage on 1080p source, before optimisation:
 
@@ -93,6 +93,26 @@ Two changes were made off the back of that profile:
 
 Result: server latency **101 ms -> 48 ms**, viewer throughput **8.8 -> 13.4 FPS**, end-to-end
 send-to-paint latency **~12 ms**, comfortably inside the 100 ms target.
+
+### A third change, not yet re-measured
+
+The transport was then rebuilt again: base64 data URIs replaced by one binary message per frame
+(length-prefixed JSON header + raw JPEG), and the streaming pump split into a producer task
+(capture + inference + annotation) and a consumer task (encode + send) so the two overlap instead of
+running in series. See [ARCHITECTURE](ARCHITECTURE.md).
+
+**The 13.4 FPS figure above predates that change and has not been superseded by a measurement.** The
+attempt to re-measure was invalid and is being repeated: the host's discrete GPU was stuck near its
+210 MHz floor against a 2100 MHz ceiling — cool at 52 °C, so power-starved rather than thermally
+throttled, with the battery at 14% on a charging adapter. In that state the *unchanged* pipeline
+benchmark read **8.07 FPS against its own 48.5 FPS baseline**, so every throughput number taken then
+describes the host, not the code.
+
+Bytes on the wire were measured in the same session and are not clock-sensitive: the binary
+transport carries **0.76x the bytes per frame** of base64, matching the expected 1/1.33 overhead.
+Re-measure with `python ml/scripts/measure_stream_delivery.py` (delivery rate) and the Playwright
+`viewer paint rate` check (what a browser actually paints); confirm `nvidia-smi` shows the GPU
+boosting first.
 
 ## Measurement caveats
 

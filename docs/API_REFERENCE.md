@@ -63,11 +63,10 @@ Same as above with a multipart file upload (`file=@frame.jpg`).
 
 ## `WS /detect/stream`
 
-Query: `source` (source id, device index, or `rtsp://` URL), `loop` (restart file sources).
+Query: `source` (source id, device index, or `rtsp://` URL), `loop` (restart file sources),
+`encoding` (`binary` — the default — or `base64`).
 
-The server sends JSON text frames of two kinds.
-
-**Status**
+**Status messages are always JSON text**, in both encodings.
 
 ```json
 { "kind": "status", "phase": "streaming",
@@ -76,20 +75,53 @@ The server sends JSON text frames of two kinds.
 
 `phase` is one of `opening`, `streaming`, `ended`, `error`.
 
-**Frame**
+### Frames — `encoding=binary` (default)
 
-```json
+Each frame is **one binary message** laid out as:
+
+```
+[4-byte big-endian uint32 header length][UTF-8 JSON header][raw JPEG bytes]
+```
+
+The header is the frame object below with `image` omitted. Pixels and metadata travel in a single
+message on purpose: as two messages they could interleave under concurrent sends and pair a header
+with the wrong image, so a client would never have to correlate them — and cannot get it wrong.
+
+Clients discriminate on the message type alone — binary means frame, text means status. Sniffing
+content is never required.
+
+The `image` field is **absent** from a binary header — not `null`. The pixels are the bytes that
+follow it.
+
+```jsonc
 { "kind": "frame", "frame_id": 117,
-  "image": "data:image/jpeg;base64,...",
   "width": 1280, "height": 720,
-  "tracks": [ ... ],
-  "timing": { "inference_ms": 31.1, "encode_ms": 17.3, "total_ms": 48.4 },
+  "tracks": [ /* ... */ ],
+  "timing": { "inference_ms": 31.1, "encode_ms": 12.4, "total_ms": 43.5,
+              "wait_ms": 0.1, "send_ms": 2.8 },
   "fps": 13.4, "server_ts": 1784500000000.0,
   "precision": "fp32_gpu", "imgsz": 640, "degraded_mode": false }
 ```
 
-The overlay is already burned into `image`; `tracks` is for the legend and inspection. `server_ts`
+`send_ms` reports the **previous** frame's send cost. A frame is already serialized by the time its
+own send finishes, so it can never carry that figure itself.
+
+### Frames — `encoding=base64`
+
+The original transport, kept for clients that cannot read binary messages. One JSON text message per
+frame, with `image` holding a `data:image/jpeg;base64,...` URI and nothing appended.
+
+It is not the default because base64 costs a third more bytes plus an encode on the server and a
+decode in the client, and a `data:` URI decodes on the browser's main thread.
+
+### Both encodings
+
+The overlay is already burned into the image; `tracks` is for the legend and inspection. `server_ts`
 is a send timestamp in epoch milliseconds, which the client subtracts to display end-to-end latency.
+
+Frames are produced and sent by separate tasks with a depth-1 queue between them, and the queue
+**drops the oldest** pending frame under backpressure. A slow client therefore sees gaps in
+`frame_id`, never a growing delay — a live view must stay current rather than complete.
 
 Send `{"action":"stop"}` to end the stream; closing the socket works too.
 

@@ -81,15 +81,52 @@ Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
 | `streamsight-detector` | the exported detector artifact (`yolo11n_int8.onnx`, or the FP16 sibling) | COCO mAP50-95 drop vs the local FP32 baseline | **no** — see below |
 | `streamsight-tracker-quality` | the ByteTrack config (`ml/models/config/bytetrack.yaml`) | MOT17 IDF1 | **no** — advisory only |
 
-> **The API does not read the registry.** `apps/api/app/backends.py` resolves artifacts from fixed
-> paths on disk; there is no MLflow code anywhere under `apps/api`. Promoting a version records a
-> decision, it does not change what serves. To deploy a promoted artifact an operator copies it into
-> `ml/models/engines/` and restarts, or hot-swaps via `POST /config/model`.
->
-> A registry-aware loader is a reasonable next step and is deliberately not implemented: it would
-> couple request-path startup to an MLflow server being reachable, which is the wrong trade for a
-> single-node local service. PRD FR-16's closing clause ("and the API loads that engine") is
-> therefore **not met** — recorded here rather than papered over.
+### The API can load what the registry promoted — if you ask it to
+
+`apps/api/app/registry.py` resolves a backend's artifact from the registry instead of from its fixed
+path. It is **off unless configured**:
+
+```powershell
+$env:STREAMSIGHT_MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+$env:STREAMSIGHT_MLFLOW_MODEL_NAME   = "streamsight-detector"
+# optional; defaults to Production
+$env:STREAMSIGHT_MLFLOW_STAGE        = "Production"
+```
+
+With no tracking URI set — the default, and CI — resolution is byte-for-byte what it always was and
+`mlflow` is never even imported. That is enforced by a test that installs an import blocker.
+
+**The original objection to this feature was correct and is what shaped the design.** Coupling
+request-path startup to a reachable MLflow server is the wrong trade for a single-node service, so:
+
+- every failure falls back to the on-disk path — unreachable server, no promoted version, or an
+  artifact logged for a different backend;
+- the fallback is **always logged**, and the startup line states which won:
+  `runtime ready: fp32_gpu @ 640 px (artifact source: path)`. A silent fallback would let the API
+  claim it serves the promoted model while serving something else;
+- an unreachable server is left alone for 5 minutes rather than re-probed at every rung of the
+  backend ladder, so one dead server costs one timeout, not one per backend. Only *transport*
+  failures earn that cooldown — a typo'd model name is deterministic and re-asked each time;
+- downloads are cached per (model, version, backend), so a hot-swap back to a resolved backend
+  costs a file check rather than a re-download.
+
+Verified end to end against the DB-backed server and the real promoted v1:
+
+```
+app.registry: backend int8_onnx_cpu resolved from mlflow registry:
+  ml\models\_mlflow_cache\streamsight-detector\1\int8_onnx_cpu\model\yolo11n_int8.onnx
+app.detector: loaded backend=int8_onnx_cpu artifact=yolo11n_int8.onnx device=cpu
+app.registry: streamsight-detector v1 was logged for backend int8_onnx_cpu, not fp32_gpu;
+  format mismatch, ignoring
+```
+
+**Scope limit, stated plainly.** In that run the resolved artifact loaded but did not end up serving,
+because ONNX Runtime fails to initialise inside the API process on this host (`DLL load failed while
+importing onnxruntime_pybind11_state`) — the same pre-existing limitation that makes `fp16_onnx`
+unusable from a plain path, unrelated to the registry. Resolution and load are demonstrated;
+end-to-end *serving* of a promoted artifact needs a host where that backend runs. Resolution also
+only swaps the artifact for a backend the availability ladder already considers runnable — it does
+not resurrect a backend with no local export.
 
 Tracking quality is a *separate* model on purpose. IDF1 measures association across frames, which
 quantization does not control; letting a weak IDF1 archive the detector would take inference offline
@@ -237,7 +274,36 @@ ceremonial ones.
 
 ---
 
-## 6. Files
+## 6. CI smoke test on COCO8 (NFR-8)
+
+`ml/eval/eval_coco.py` needs a ~1 GB val2017 download and is normally run against a GPU backend, so
+CI cannot run it as the accuracy gate does. What CI runs instead, in the `api` job's last step, is
+`ml/eval/smoke_coco8.py`: the same pipeline (dataset load, inference, xyxy->xywh conversion,
+class-index -> COCO-category-id mapping, pycocotools scoring), driven end to end on
+[COCO8](https://docs.ultralytics.com/datasets/detect/coco8) (Ultralytics' 8-image subset, ~1 MB) with
+the `fp32_cpu` backend, which is hardcoded and never touches a GPU.
+
+COCO8 ships YOLO-format `.txt` labels rather than a COCO JSON, so the smoke test converts the 4-image
+val split itself (`yolo_label_to_coco_bbox`, unit-tested in `ml/eval/test_smoke_coco8.py`) and then
+calls the *same* `build_category_map`, `detach_tracker`, `predict_dataset`, and `evaluate` functions
+`eval_coco.py` uses in production — the point is to exercise the real conversions, not a parallel copy
+of them.
+
+Assertions are deliberately loose (mAP50-95 and mAP75 each in `(0, 1]`, detections non-empty): 4 images
+is too few to pin an exact number without flaking on the next ultralytics point release. mAP50 is not
+checked — it is forgiving enough (IoU >= 0.5) that a measured width/height swap in the box conversion
+still scored 0.86 on this dataset. mAP75 caught the same bug at exactly 0.0, because a pretrained model
+on 4 easy images should clear a 0.75 IoU bar on *something* when the boxes are right.
+
+The model weight (`yolo11n.pt`, ~5 MB) and the COCO8 zip (~1 MB) are downloaded from pinned GitHub
+release URLs, verified by size floor + SHA256 (pinned on first download into
+`ml/data/manifests/coco8.json`, the same pattern `download_coco.py` uses), and cached in CI via
+`actions/cache`. A missing or failed download is a hard `SETUP FAILURE` — the test never skips itself;
+a smoke test that skips would report green while proving nothing.
+
+---
+
+## 7. Files
 
 | Path | Role |
 |---|---|
@@ -247,6 +313,7 @@ ceremonial ones.
 | `ml/quantization/benchmark_precision.py` | the promotion gate; registry server helper |
 | `ml/eval/eval_coco.py` | COCO mAP per backend — the gate's accuracy source |
 | `ml/eval/eval_mot.py` | MOT17 MOTA/IDF1/IDSW — the tracker gate's source |
+| `ml/eval/smoke_coco8.py` | CPU-only CI smoke test on COCO8 — proves the eval pipeline runs, not accuracy (NFR-8) |
 | `mlflow.db`, `mlartifacts/` | tracking + registry state (git-ignored) |
 
 Phu Nguyen - HCMC, Vietnam

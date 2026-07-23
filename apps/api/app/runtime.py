@@ -39,6 +39,7 @@ from .models import (
     ModelConfigResponse,
     Track,
 )
+from .registry import last_resolution_source, resolved_backend
 from .store import DetectionStore
 
 logger = logging.getLogger(__name__)
@@ -126,7 +127,12 @@ class InferenceRuntime:
 
         self._detector = detector
         self.metrics.refresh_gpu()
-        logger.info("runtime ready: %s @ %d px", detector.backend.key, detector.imgsz)
+        logger.info(
+            "runtime ready: %s @ %d px (artifact source: %s)",
+            detector.backend.key,
+            detector.imgsz,
+            last_resolution_source(detector.backend.key),
+        )
 
     def shutdown(self) -> None:
         with self._lock:
@@ -146,7 +152,11 @@ class InferenceRuntime:
         for backend in chain:
             if (backend.key, imgsz) in self._unusable or not backend.supports_imgsz(imgsz):
                 continue
-            detector = Detector(backend, imgsz, self._settings)
+            # `resolved_backend` is a no-op when MLflow is unconfigured (the
+            # default): it returns `backend` itself, so this line does not
+            # change behaviour for anyone who has not set a tracking URI.
+            effective_backend = resolved_backend(backend, self._settings)
+            detector = Detector(effective_backend, imgsz, self._settings)
             try:
                 detector.load()
                 detector.warmup(frames=warmup_frames)

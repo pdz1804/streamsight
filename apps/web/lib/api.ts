@@ -98,8 +98,18 @@ export const api = {
   },
 };
 
-/** WebSocket URL for the annotated live stream. */
-export function streamUrl(source: string, loop = true): string {
+/**
+ * WebSocket URL for the annotated live stream.
+ *
+ * `encoding` selects the wire format. `binary` sends one length-prefixed message
+ * per frame (JSON header + raw JPEG); `base64` is the older all-JSON transport,
+ * kept for clients that cannot read binary messages.
+ */
+export function streamUrl(
+  source: string,
+  loop = true,
+  encoding: "binary" | "base64" = "binary",
+): string {
   const base = API_BASE.replace(/^http/, "ws");
-  return `${base}/detect/stream?source=${encodeURIComponent(source)}&loop=${loop}`;
+  return `${base}/detect/stream?source=${encodeURIComponent(source)}&loop=${loop}&encoding=${encoding}`;
 }

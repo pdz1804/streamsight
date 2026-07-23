@@ -3,10 +3,10 @@
 /**
  * WebSocket streaming hook.
  *
- * Two deliberate performance decisions:
+ * Three deliberate performance decisions:
  *
  * 1. **Frames never enter React state.** Each annotated JPEG is painted straight
- *    to a canvas as it arrives. Putting a ~100 KB data URI into state 30 times a
+ *    to a canvas as it arrives. Putting a ~100 KB payload into state 30 times a
  *    second would re-render the tree on every frame for no benefit.
  * 2. **Painting is immediate, telemetry is throttled.** The canvas draw happens
  *    the instant a frame is parsed, with no `requestAnimationFrame` pacing --
@@ -14,6 +14,12 @@
  *    stalls the visible stream exactly when someone is watching the network
  *    panel. Only the numeric readouts are batched, at 4 Hz, because no human
  *    reads a latency figure 30 times a second.
+ * 3. **Pixels arrive as bytes, not base64.** The server sends one binary message
+ *    per frame -- a JSON header followed by the raw JPEG -- and those bytes go
+ *    to `createImageBitmap`, which decodes off the main thread. The older
+ *    `data:` URI path fed `new Image()`, which decodes on the main thread and
+ *    carries a third more bytes to get there. It remains as a fallback for
+ *    browsers without `createImageBitmap`.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -22,6 +28,11 @@ import { streamUrl } from "./api";
 import type { StreamFrame, StreamMessage, StreamPhase, Track } from "./types";
 
 const TELEMETRY_INTERVAL_MS = 250;
+
+/** Width of the big-endian uint32 length prefix on every binary frame. */
+const HEADER_LENGTH_BYTES = 4;
+
+const headerDecoder = new TextDecoder();
 
 export interface StreamTelemetry {
   frameId: number;
@@ -84,25 +95,78 @@ export function useStream(): UseStreamResult {
     }, TELEMETRY_INTERVAL_MS);
   }, []);
 
-  const paint = useCallback((frame: StreamFrame) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const image = new Image();
-    image.onload = () => {
-      // Decoding is async, so a slow frame could land after a newer one.
-      // Dropping it keeps the stream monotonic instead of flickering backwards.
-      if (frame.frame_id < lastPaintedRef.current) return;
-      lastPaintedRef.current = frame.frame_id;
-      if (canvas.width !== image.width || canvas.height !== image.height) {
-        canvas.width = image.width;
-        canvas.height = image.height;
+  /**
+   * Draw a decoded frame, unless a newer one has already been painted.
+   *
+   * Decoding is async, so a slow frame can land after a newer one; dropping it
+   * keeps the stream monotonic instead of flickering backwards.
+   */
+  const drawSource = useCallback(
+    (frameId: number, source: CanvasImageSource, width: number, height: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas || frameId < lastPaintedRef.current) return;
+      lastPaintedRef.current = frameId;
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
       }
-      const context = canvas.getContext("2d");
-      if (!context) return;
-      context.drawImage(image, 0, 0);
-    };
-    image.src = frame.image;
-  }, []);
+      canvas.getContext("2d")?.drawImage(source, 0, 0);
+    },
+    [],
+  );
+
+  /** Decode JPEG bytes off the main thread and paint them. */
+  const paintBytes = useCallback(
+    (frameId: number, jpeg: Uint8Array<ArrayBuffer>) => {
+      const blob = new Blob([jpeg], { type: "image/jpeg" });
+      if (typeof createImageBitmap === "function") {
+        void createImageBitmap(blob)
+          .then((bitmap) => {
+            drawSource(frameId, bitmap, bitmap.width, bitmap.height);
+            // ImageBitmaps hold their pixel buffer until closed explicitly;
+            // leaving that to the GC leaks tens of MB within a minute.
+            bitmap.close();
+          })
+          .catch(() => undefined);
+        return;
+      }
+      // No createImageBitmap: decode via an object URL, which still beats a
+      // data URI because the bytes are never stringified.
+      const url = URL.createObjectURL(blob);
+      const image = new Image();
+      image.onload = () => {
+        drawSource(frameId, image, image.width, image.height);
+        URL.revokeObjectURL(url);
+      };
+      image.onerror = () => URL.revokeObjectURL(url);
+      image.src = url;
+    },
+    [drawSource],
+  );
+
+  /** Split a binary message into its JSON header and the JPEG that follows. */
+  const readBinaryFrame = useCallback((buffer: ArrayBuffer): StreamFrame | null => {
+    if (buffer.byteLength < HEADER_LENGTH_BYTES) return null;
+    const headerLength = new DataView(buffer).getUint32(0, false);
+    const jpegStart = HEADER_LENGTH_BYTES + headerLength;
+    if (buffer.byteLength < jpegStart) return null;
+    const header = JSON.parse(
+      headerDecoder.decode(new Uint8Array(buffer, HEADER_LENGTH_BYTES, headerLength)),
+    ) as StreamFrame;
+    paintBytes(header.frame_id, new Uint8Array(buffer, jpegStart));
+    return header;
+  }, [paintBytes]);
+
+  /** Legacy transport: the pixels arrive as a base64 data URI inside the JSON. */
+  const paintDataUri = useCallback(
+    (frame: StreamFrame) => {
+      if (!frame.image) return;
+      const image = new Image();
+      image.onload = () => drawSource(frame.frame_id, image, image.width, image.height);
+      image.src = frame.image;
+    },
+    [drawSource],
+  );
 
   const stop = useCallback(() => {
     intentionalCloseRef.current = true;
@@ -125,18 +189,27 @@ export function useStream(): UseStreamResult {
       setMessage("connecting");
 
       const socket = new WebSocket(streamUrl(source, loop));
+      // Frames arrive as ArrayBuffers rather than Blobs so the header can be
+      // read synchronously; a Blob would force an extra async hop per frame.
+      socket.binaryType = "arraybuffer";
       socketRef.current = socket;
 
       socket.onopen = () => setConnected(true);
 
       socket.onmessage = (event) => {
-        const payload = JSON.parse(event.data as string) as StreamMessage;
-        if (payload.kind === "status") {
-          setPhase(payload.phase);
-          setMessage(payload.message);
-          return;
+        let payload: StreamMessage | null;
+        if (event.data instanceof ArrayBuffer) {
+          payload = readBinaryFrame(event.data);
+        } else {
+          payload = JSON.parse(event.data as string) as StreamMessage;
+          if (payload.kind === "status") {
+            setPhase(payload.phase);
+            setMessage(payload.message);
+            return;
+          }
+          paintDataUri(payload);
         }
-        paint(payload);
+        if (!payload || payload.kind !== "frame") return;
         queueTelemetry({
           frameId: payload.frame_id,
           fps: payload.fps,
@@ -164,7 +237,7 @@ export function useStream(): UseStreamResult {
         }
       };
     },
-    [paint, queueTelemetry],
+    [paintDataUri, readBinaryFrame, queueTelemetry],
   );
 
   useEffect(

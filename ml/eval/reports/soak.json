@@ -1,0 +1,2427 @@
+{
+  "generated_at": "2026-07-23 07:38 UTC",
+  "duration_s": 14400.0,
+  "interval_s": 60.0,
+  "samples": 240,
+  "steady_state_samples": 239,
+  "warmup_excluded_s": 120.0,
+  "frames_processed": 114256,
+  "frames_received": 114256,
+  "reconnects": 0,
+  "errors": 0,
+  "degraded_at_any_point": false,
+  "gpu_first_mb": 435,
+  "gpu_last_mb": 487,
+  "gpu_peak_mb": 487,
+  "gpu_drift_mb": 52,
+  "rss_first_mb": 1393,
+  "rss_last_mb": 671,
+  "rss_peak_mb": 1409,
+  "rss_drift_mb": -722,
+  "fps_mean": 7.99,
+  "fps_min": 2.56,
+  "vram_drift_limit_mb": 200,
+  "passed": true,
+  "series": [
+    {
+      "elapsed_s": 60.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1376,
+      "fps": 6.88,
+      "frames_processed": 259,
+      "unique_tracks": 41,
+      "degraded_mode": false,
+      "frames_received": 258
+    },
+    {
+      "elapsed_s": 120.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1393,
+      "fps": 8.45,
+      "frames_processed": 732,
+      "unique_tracks": 80,
+      "degraded_mode": false,
+      "frames_received": 732
+    },
+    {
+      "elapsed_s": 180.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1397,
+      "fps": 2.94,
+      "frames_processed": 963,
+      "unique_tracks": 93,
+      "degraded_mode": false,
+      "frames_received": 962
+    },
+    {
+      "elapsed_s": 240.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1397,
+      "fps": 6.38,
+      "frames_processed": 1298,
+      "unique_tracks": 123,
+      "degraded_mode": false,
+      "frames_received": 1298
+    },
+    {
+      "elapsed_s": 300.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1398,
+      "fps": 7.65,
+      "frames_processed": 1672,
+      "unique_tracks": 153,
+      "degraded_mode": false,
+      "frames_received": 1671
+    },
+    {
+      "elapsed_s": 360.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1394,
+      "fps": 8.88,
+      "frames_processed": 2199,
+      "unique_tracks": 193,
+      "degraded_mode": false,
+      "frames_received": 2198
+    },
+    {
+      "elapsed_s": 420.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1389,
+      "fps": 12.49,
+      "frames_processed": 2753,
+      "unique_tracks": 228,
+      "degraded_mode": false,
+      "frames_received": 2752
+    },
+    {
+      "elapsed_s": 480.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1392,
+      "fps": 16.61,
+      "frames_processed": 3618,
+      "unique_tracks": 276,
+      "degraded_mode": false,
+      "frames_received": 3617
+    },
+    {
+      "elapsed_s": 540.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1401,
+      "fps": 12.32,
+      "frames_processed": 4354,
+      "unique_tracks": 325,
+      "degraded_mode": false,
+      "frames_received": 4353
+    },
+    {
+      "elapsed_s": 600.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1395,
+      "fps": 11.59,
+      "frames_processed": 5175,
+      "unique_tracks": 375,
+      "degraded_mode": false,
+      "frames_received": 5175
+    },
+    {
+      "elapsed_s": 660.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1405,
+      "fps": 9.51,
+      "frames_processed": 5778,
+      "unique_tracks": 420,
+      "degraded_mode": false,
+      "frames_received": 5777
+    },
+    {
+      "elapsed_s": 720.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1398,
+      "fps": 10.95,
+      "frames_processed": 6427,
+      "unique_tracks": 458,
+      "degraded_mode": false,
+      "frames_received": 6426
+    },
+    {
+      "elapsed_s": 780.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1406,
+      "fps": 5.02,
+      "frames_processed": 6699,
+      "unique_tracks": 476,
+      "degraded_mode": false,
+      "frames_received": 6698
+    },
+    {
+      "elapsed_s": 840.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1405,
+      "fps": 6.15,
+      "frames_processed": 7027,
+      "unique_tracks": 505,
+      "degraded_mode": false,
+      "frames_received": 7026
+    },
+    {
+      "elapsed_s": 900.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1405,
+      "fps": 5.22,
+      "frames_processed": 7566,
+      "unique_tracks": 539,
+      "degraded_mode": false,
+      "frames_received": 7566
+    },
+    {
+      "elapsed_s": 960.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1403,
+      "fps": 5.28,
+      "frames_processed": 7879,
+      "unique_tracks": 562,
+      "degraded_mode": false,
+      "frames_received": 7878
+    },
+    {
+      "elapsed_s": 1020.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1405,
+      "fps": 5.22,
+      "frames_processed": 8189,
+      "unique_tracks": 584,
+      "degraded_mode": false,
+      "frames_received": 8188
+    },
+    {
+      "elapsed_s": 1080.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1404,
+      "fps": 5.19,
+      "frames_processed": 8498,
+      "unique_tracks": 605,
+      "degraded_mode": false,
+      "frames_received": 8497
+    },
+    {
+      "elapsed_s": 1140.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1403,
+      "fps": 12.11,
+      "frames_processed": 8988,
+      "unique_tracks": 645,
+      "degraded_mode": false,
+      "frames_received": 8987
+    },
+    {
+      "elapsed_s": 1200.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1403,
+      "fps": 13.65,
+      "frames_processed": 9813,
+      "unique_tracks": 697,
+      "degraded_mode": false,
+      "frames_received": 9812
+    },
+    {
+      "elapsed_s": 1260.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1402,
+      "fps": 10.61,
+      "frames_processed": 10476,
+      "unique_tracks": 739,
+      "degraded_mode": false,
+      "frames_received": 10475
+    },
+    {
+      "elapsed_s": 1320.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1406,
+      "fps": 13.99,
+      "frames_processed": 11134,
+      "unique_tracks": 781,
+      "degraded_mode": false,
+      "frames_received": 11133
+    },
+    {
+      "elapsed_s": 1380.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1405,
+      "fps": 13.9,
+      "frames_processed": 11926,
+      "unique_tracks": 834,
+      "degraded_mode": false,
+      "frames_received": 11925
+    },
+    {
+      "elapsed_s": 1440.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1403,
+      "fps": 12.77,
+      "frames_processed": 12707,
+      "unique_tracks": 882,
+      "degraded_mode": false,
+      "frames_received": 12706
+    },
+    {
+      "elapsed_s": 1500.8,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1409,
+      "fps": 5.65,
+      "frames_processed": 13343,
+      "unique_tracks": 918,
+      "degraded_mode": false,
+      "frames_received": 13342
+    },
+    {
+      "elapsed_s": 1560.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1399,
+      "fps": 4.95,
+      "frames_processed": 13641,
+      "unique_tracks": 945,
+      "degraded_mode": false,
+      "frames_received": 13641
+    },
+    {
+      "elapsed_s": 1620.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1407,
+      "fps": 5.07,
+      "frames_processed": 13945,
+      "unique_tracks": 973,
+      "degraded_mode": false,
+      "frames_received": 13945
+    },
+    {
+      "elapsed_s": 1680.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1346,
+      "fps": 4.17,
+      "frames_processed": 14204,
+      "unique_tracks": 991,
+      "degraded_mode": false,
+      "frames_received": 14204
+    },
+    {
+      "elapsed_s": 1741.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1345,
+      "fps": 4.46,
+      "frames_processed": 14466,
+      "unique_tracks": 1014,
+      "degraded_mode": false,
+      "frames_received": 14465
+    },
+    {
+      "elapsed_s": 1801.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1341,
+      "fps": 4.4,
+      "frames_processed": 14734,
+      "unique_tracks": 1035,
+      "degraded_mode": false,
+      "frames_received": 14733
+    },
+    {
+      "elapsed_s": 1861.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1347,
+      "fps": 4.28,
+      "frames_processed": 14996,
+      "unique_tracks": 1054,
+      "degraded_mode": false,
+      "frames_received": 14996
+    },
+    {
+      "elapsed_s": 1921.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 1348,
+      "fps": 4.36,
+      "frames_processed": 15255,
+      "unique_tracks": 1075,
+      "degraded_mode": false,
+      "frames_received": 15254
+    },
+    {
+      "elapsed_s": 1981.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 755,
+      "fps": 11.21,
+      "frames_processed": 15724,
+      "unique_tracks": 1116,
+      "degraded_mode": false,
+      "frames_received": 15723
+    },
+    {
+      "elapsed_s": 2041.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 762,
+      "fps": 4.26,
+      "frames_processed": 16074,
+      "unique_tracks": 1138,
+      "degraded_mode": false,
+      "frames_received": 16073
+    },
+    {
+      "elapsed_s": 2101.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 759,
+      "fps": 4.17,
+      "frames_processed": 16329,
+      "unique_tracks": 1159,
+      "degraded_mode": false,
+      "frames_received": 16328
+    },
+    {
+      "elapsed_s": 2161.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 760,
+      "fps": 4.38,
+      "frames_processed": 16630,
+      "unique_tracks": 1185,
+      "degraded_mode": false,
+      "frames_received": 16630
+    },
+    {
+      "elapsed_s": 2221.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 765,
+      "fps": 7.17,
+      "frames_processed": 16977,
+      "unique_tracks": 1211,
+      "degraded_mode": false,
+      "frames_received": 16977
+    },
+    {
+      "elapsed_s": 2281.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 720,
+      "fps": 6.58,
+      "frames_processed": 17372,
+      "unique_tracks": 1249,
+      "degraded_mode": false,
+      "frames_received": 17372
+    },
+    {
+      "elapsed_s": 2341.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 716,
+      "fps": 6.69,
+      "frames_processed": 17769,
+      "unique_tracks": 1279,
+      "degraded_mode": false,
+      "frames_received": 17768
+    },
+    {
+      "elapsed_s": 2401.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 726,
+      "fps": 6.98,
+      "frames_processed": 18190,
+      "unique_tracks": 1313,
+      "degraded_mode": false,
+      "frames_received": 18189
+    },
+    {
+      "elapsed_s": 2461.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 721,
+      "fps": 5.35,
+      "frames_processed": 18565,
+      "unique_tracks": 1347,
+      "degraded_mode": false,
+      "frames_received": 18564
+    },
+    {
+      "elapsed_s": 2521.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 720,
+      "fps": 4.68,
+      "frames_processed": 18844,
+      "unique_tracks": 1368,
+      "degraded_mode": false,
+      "frames_received": 18844
+    },
+    {
+      "elapsed_s": 2581.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 721,
+      "fps": 4.51,
+      "frames_processed": 19113,
+      "unique_tracks": 1387,
+      "degraded_mode": false,
+      "frames_received": 19113
+    },
+    {
+      "elapsed_s": 2641.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 719,
+      "fps": 4.53,
+      "frames_processed": 19382,
+      "unique_tracks": 1407,
+      "degraded_mode": false,
+      "frames_received": 19382
+    },
+    {
+      "elapsed_s": 2701.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 717,
+      "fps": 5.43,
+      "frames_processed": 19686,
+      "unique_tracks": 1430,
+      "degraded_mode": false,
+      "frames_received": 19685
+    },
+    {
+      "elapsed_s": 2761.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 721,
+      "fps": 4.52,
+      "frames_processed": 19953,
+      "unique_tracks": 1452,
+      "degraded_mode": false,
+      "frames_received": 19952
+    },
+    {
+      "elapsed_s": 2821.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 719,
+      "fps": 4.67,
+      "frames_processed": 20228,
+      "unique_tracks": 1478,
+      "degraded_mode": false,
+      "frames_received": 20227
+    },
+    {
+      "elapsed_s": 2881.8,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 719,
+      "fps": 4.4,
+      "frames_processed": 20495,
+      "unique_tracks": 1501,
+      "degraded_mode": false,
+      "frames_received": 20494
+    },
+    {
+      "elapsed_s": 2941.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 717,
+      "fps": 11.28,
+      "frames_processed": 21160,
+      "unique_tracks": 1535,
+      "degraded_mode": false,
+      "frames_received": 21159
+    },
+    {
+      "elapsed_s": 3001.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 716,
+      "fps": 11.48,
+      "frames_processed": 21807,
+      "unique_tracks": 1580,
+      "degraded_mode": false,
+      "frames_received": 21806
+    },
+    {
+      "elapsed_s": 3062.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 708,
+      "fps": 12.27,
+      "frames_processed": 22506,
+      "unique_tracks": 1628,
+      "degraded_mode": false,
+      "frames_received": 22505
+    },
+    {
+      "elapsed_s": 3122.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 723,
+      "fps": 12.01,
+      "frames_processed": 23205,
+      "unique_tracks": 1680,
+      "degraded_mode": false,
+      "frames_received": 23204
+    },
+    {
+      "elapsed_s": 3182.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 709,
+      "fps": 10.79,
+      "frames_processed": 23913,
+      "unique_tracks": 1729,
+      "degraded_mode": false,
+      "frames_received": 23912
+    },
+    {
+      "elapsed_s": 3242.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 711,
+      "fps": 10.81,
+      "frames_processed": 24535,
+      "unique_tracks": 1770,
+      "degraded_mode": false,
+      "frames_received": 24535
+    },
+    {
+      "elapsed_s": 3302.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 706,
+      "fps": 9.94,
+      "frames_processed": 25144,
+      "unique_tracks": 1814,
+      "degraded_mode": false,
+      "frames_received": 25143
+    },
+    {
+      "elapsed_s": 3362.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 703,
+      "fps": 10.54,
+      "frames_processed": 25795,
+      "unique_tracks": 1860,
+      "degraded_mode": false,
+      "frames_received": 25794
+    },
+    {
+      "elapsed_s": 3422.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 715,
+      "fps": 10.12,
+      "frames_processed": 26420,
+      "unique_tracks": 1907,
+      "degraded_mode": false,
+      "frames_received": 26419
+    },
+    {
+      "elapsed_s": 3482.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 698,
+      "fps": 11.48,
+      "frames_processed": 27060,
+      "unique_tracks": 1952,
+      "degraded_mode": false,
+      "frames_received": 27059
+    },
+    {
+      "elapsed_s": 3542.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 702,
+      "fps": 11.36,
+      "frames_processed": 27750,
+      "unique_tracks": 1992,
+      "degraded_mode": false,
+      "frames_received": 27749
+    },
+    {
+      "elapsed_s": 3602.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 700,
+      "fps": 12.28,
+      "frames_processed": 28433,
+      "unique_tracks": 2043,
+      "degraded_mode": false,
+      "frames_received": 28432
+    },
+    {
+      "elapsed_s": 3662.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 706,
+      "fps": 10.64,
+      "frames_processed": 29129,
+      "unique_tracks": 2090,
+      "degraded_mode": false,
+      "frames_received": 29128
+    },
+    {
+      "elapsed_s": 3722.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 704,
+      "fps": 11.51,
+      "frames_processed": 29781,
+      "unique_tracks": 2133,
+      "degraded_mode": false,
+      "frames_received": 29780
+    },
+    {
+      "elapsed_s": 3782.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 709,
+      "fps": 11.18,
+      "frames_processed": 30457,
+      "unique_tracks": 2174,
+      "degraded_mode": false,
+      "frames_received": 30456
+    },
+    {
+      "elapsed_s": 3842.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 707,
+      "fps": 11.72,
+      "frames_processed": 31158,
+      "unique_tracks": 2212,
+      "degraded_mode": false,
+      "frames_received": 31158
+    },
+    {
+      "elapsed_s": 3902.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 704,
+      "fps": 11.26,
+      "frames_processed": 31863,
+      "unique_tracks": 2265,
+      "degraded_mode": false,
+      "frames_received": 31863
+    },
+    {
+      "elapsed_s": 3962.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 708,
+      "fps": 11.16,
+      "frames_processed": 32492,
+      "unique_tracks": 2310,
+      "degraded_mode": false,
+      "frames_received": 32491
+    },
+    {
+      "elapsed_s": 4022.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 705,
+      "fps": 11.66,
+      "frames_processed": 33175,
+      "unique_tracks": 2358,
+      "degraded_mode": false,
+      "frames_received": 33174
+    },
+    {
+      "elapsed_s": 4082.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 707,
+      "fps": 12.19,
+      "frames_processed": 33891,
+      "unique_tracks": 2398,
+      "degraded_mode": false,
+      "frames_received": 33890
+    },
+    {
+      "elapsed_s": 4142.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 710,
+      "fps": 10.54,
+      "frames_processed": 34577,
+      "unique_tracks": 2447,
+      "degraded_mode": false,
+      "frames_received": 34576
+    },
+    {
+      "elapsed_s": 4202.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 697,
+      "fps": 10.95,
+      "frames_processed": 35208,
+      "unique_tracks": 2494,
+      "degraded_mode": false,
+      "frames_received": 35207
+    },
+    {
+      "elapsed_s": 4262.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 707,
+      "fps": 11.26,
+      "frames_processed": 35865,
+      "unique_tracks": 2538,
+      "degraded_mode": false,
+      "frames_received": 35864
+    },
+    {
+      "elapsed_s": 4322.8,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 708,
+      "fps": 12.07,
+      "frames_processed": 36566,
+      "unique_tracks": 2587,
+      "degraded_mode": false,
+      "frames_received": 36565
+    },
+    {
+      "elapsed_s": 4382.8,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 707,
+      "fps": 11.54,
+      "frames_processed": 37284,
+      "unique_tracks": 2629,
+      "degraded_mode": false,
+      "frames_received": 37283
+    },
+    {
+      "elapsed_s": 4442.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 701,
+      "fps": 11.33,
+      "frames_processed": 37935,
+      "unique_tracks": 2671,
+      "degraded_mode": false,
+      "frames_received": 37934
+    },
+    {
+      "elapsed_s": 4502.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 709,
+      "fps": 10.91,
+      "frames_processed": 38615,
+      "unique_tracks": 2725,
+      "degraded_mode": false,
+      "frames_received": 38614
+    },
+    {
+      "elapsed_s": 4562.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 701,
+      "fps": 12.25,
+      "frames_processed": 39320,
+      "unique_tracks": 2775,
+      "degraded_mode": false,
+      "frames_received": 39319
+    },
+    {
+      "elapsed_s": 4623.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 708,
+      "fps": 11.13,
+      "frames_processed": 40039,
+      "unique_tracks": 2816,
+      "degraded_mode": false,
+      "frames_received": 40039
+    },
+    {
+      "elapsed_s": 4683.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 707,
+      "fps": 11.65,
+      "frames_processed": 40695,
+      "unique_tracks": 2859,
+      "degraded_mode": false,
+      "frames_received": 40694
+    },
+    {
+      "elapsed_s": 4743.0,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 702,
+      "fps": 11.71,
+      "frames_processed": 41376,
+      "unique_tracks": 2900,
+      "degraded_mode": false,
+      "frames_received": 41375
+    },
+    {
+      "elapsed_s": 4803.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 708,
+      "fps": 11.98,
+      "frames_processed": 42085,
+      "unique_tracks": 2947,
+      "degraded_mode": false,
+      "frames_received": 42084
+    },
+    {
+      "elapsed_s": 4863.1,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 708,
+      "fps": 10.78,
+      "frames_processed": 42786,
+      "unique_tracks": 2994,
+      "degraded_mode": false,
+      "frames_received": 42786
+    },
+    {
+      "elapsed_s": 4923.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 705,
+      "fps": 11.01,
+      "frames_processed": 43411,
+      "unique_tracks": 3029,
+      "degraded_mode": false,
+      "frames_received": 43411
+    },
+    {
+      "elapsed_s": 4983.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 705,
+      "fps": 11.42,
+      "frames_processed": 44096,
+      "unique_tracks": 3078,
+      "degraded_mode": false,
+      "frames_received": 44095
+    },
+    {
+      "elapsed_s": 5043.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 710,
+      "fps": 7.02,
+      "frames_processed": 44607,
+      "unique_tracks": 3116,
+      "degraded_mode": false,
+      "frames_received": 44607
+    },
+    {
+      "elapsed_s": 5103.2,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 707,
+      "fps": 7.73,
+      "frames_processed": 45033,
+      "unique_tracks": 3141,
+      "degraded_mode": false,
+      "frames_received": 45032
+    },
+    {
+      "elapsed_s": 5163.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 702,
+      "fps": 6.57,
+      "frames_processed": 45434,
+      "unique_tracks": 3176,
+      "degraded_mode": false,
+      "frames_received": 45433
+    },
+    {
+      "elapsed_s": 5223.3,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 706,
+      "fps": 6.84,
+      "frames_processed": 45836,
+      "unique_tracks": 3208,
+      "degraded_mode": false,
+      "frames_received": 45836
+    },
+    {
+      "elapsed_s": 5283.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 706,
+      "fps": 7.53,
+      "frames_processed": 46281,
+      "unique_tracks": 3244,
+      "degraded_mode": false,
+      "frames_received": 46280
+    },
+    {
+      "elapsed_s": 5343.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 705,
+      "fps": 7.27,
+      "frames_processed": 46731,
+      "unique_tracks": 3282,
+      "degraded_mode": false,
+      "frames_received": 46730
+    },
+    {
+      "elapsed_s": 5403.4,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 707,
+      "fps": 7.19,
+      "frames_processed": 47159,
+      "unique_tracks": 3315,
+      "degraded_mode": false,
+      "frames_received": 47159
+    },
+    {
+      "elapsed_s": 5463.5,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 705,
+      "fps": 7.2,
+      "frames_processed": 47585,
+      "unique_tracks": 3350,
+      "degraded_mode": false,
+      "frames_received": 47584
+    },
+    {
+      "elapsed_s": 5523.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 711,
+      "fps": 7.5,
+      "frames_processed": 48036,
+      "unique_tracks": 3382,
+      "degraded_mode": false,
+      "frames_received": 48036
+    },
+    {
+      "elapsed_s": 5583.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 682,
+      "fps": 7.31,
+      "frames_processed": 48487,
+      "unique_tracks": 3420,
+      "degraded_mode": false,
+      "frames_received": 48487
+    },
+    {
+      "elapsed_s": 5643.6,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 688,
+      "fps": 7.22,
+      "frames_processed": 48918,
+      "unique_tracks": 3450,
+      "degraded_mode": false,
+      "frames_received": 48917
+    },
+    {
+      "elapsed_s": 5703.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 686,
+      "fps": 7.08,
+      "frames_processed": 49348,
+      "unique_tracks": 3486,
+      "degraded_mode": false,
+      "frames_received": 49347
+    },
+    {
+      "elapsed_s": 5763.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 689,
+      "fps": 7.66,
+      "frames_processed": 49791,
+      "unique_tracks": 3514,
+      "degraded_mode": false,
+      "frames_received": 49790
+    },
+    {
+      "elapsed_s": 5823.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 686,
+      "fps": 7.36,
+      "frames_processed": 50236,
+      "unique_tracks": 3553,
+      "degraded_mode": false,
+      "frames_received": 50235
+    },
+    {
+      "elapsed_s": 5883.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 681,
+      "fps": 7.08,
+      "frames_processed": 50663,
+      "unique_tracks": 3581,
+      "degraded_mode": false,
+      "frames_received": 50662
+    },
+    {
+      "elapsed_s": 5943.7,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 680,
+      "fps": 7.44,
+      "frames_processed": 51093,
+      "unique_tracks": 3621,
+      "degraded_mode": false,
+      "frames_received": 51092
+    },
+    {
+      "elapsed_s": 6003.8,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 688,
+      "fps": 7.47,
+      "frames_processed": 51545,
+      "unique_tracks": 3648,
+      "degraded_mode": false,
+      "frames_received": 51544
+    },
+    {
+      "elapsed_s": 6063.8,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 689,
+      "fps": 7.41,
+      "frames_processed": 51994,
+      "unique_tracks": 3685,
+      "degraded_mode": false,
+      "frames_received": 51993
+    },
+    {
+      "elapsed_s": 6123.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 688,
+      "fps": 7.26,
+      "frames_processed": 52427,
+      "unique_tracks": 3712,
+      "degraded_mode": false,
+      "frames_received": 52426
+    },
+    {
+      "elapsed_s": 6183.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 682,
+      "fps": 7.18,
+      "frames_processed": 52868,
+      "unique_tracks": 3750,
+      "degraded_mode": false,
+      "frames_received": 52867
+    },
+    {
+      "elapsed_s": 6243.9,
+      "gpu_used_mb": 435,
+      "process_ram_mb": 700,
+      "fps": 3.59,
+      "frames_processed": 53191,
+      "unique_tracks": 3777,
+      "degraded_mode": false,
+      "frames_received": 53190
+    },
+    {
+      "elapsed_s": 6303.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 700,
+      "fps": 11.5,
+      "frames_processed": 53792,
+      "unique_tracks": 3815,
+      "degraded_mode": false,
+      "frames_received": 53791
+    },
+    {
+      "elapsed_s": 6364.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 691,
+      "fps": 18.83,
+      "frames_processed": 54529,
+      "unique_tracks": 3863,
+      "degraded_mode": false,
+      "frames_received": 54528
+    },
+    {
+      "elapsed_s": 6424.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 695,
+      "fps": 18.77,
+      "frames_processed": 55610,
+      "unique_tracks": 3918,
+      "degraded_mode": false,
+      "frames_received": 55609
+    },
+    {
+      "elapsed_s": 6484.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 698,
+      "fps": 7.69,
+      "frames_processed": 56207,
+      "unique_tracks": 3957,
+      "degraded_mode": false,
+      "frames_received": 56206
+    },
+    {
+      "elapsed_s": 6544.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 699,
+      "fps": 7.75,
+      "frames_processed": 56677,
+      "unique_tracks": 3991,
+      "degraded_mode": false,
+      "frames_received": 56676
+    },
+    {
+      "elapsed_s": 6604.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 701,
+      "fps": 7.9,
+      "frames_processed": 57129,
+      "unique_tracks": 4022,
+      "degraded_mode": false,
+      "frames_received": 57129
+    },
+    {
+      "elapsed_s": 6664.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 697,
+      "fps": 7.1,
+      "frames_processed": 57628,
+      "unique_tracks": 4065,
+      "degraded_mode": false,
+      "frames_received": 57628
+    },
+    {
+      "elapsed_s": 6724.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 697,
+      "fps": 9.17,
+      "frames_processed": 58157,
+      "unique_tracks": 4102,
+      "degraded_mode": false,
+      "frames_received": 58156
+    },
+    {
+      "elapsed_s": 6784.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 699,
+      "fps": 7.2,
+      "frames_processed": 58592,
+      "unique_tracks": 4132,
+      "degraded_mode": false,
+      "frames_received": 58591
+    },
+    {
+      "elapsed_s": 6844.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 680,
+      "fps": 6.91,
+      "frames_processed": 59016,
+      "unique_tracks": 4160,
+      "degraded_mode": false,
+      "frames_received": 59016
+    },
+    {
+      "elapsed_s": 6904.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 677,
+      "fps": 9.37,
+      "frames_processed": 59482,
+      "unique_tracks": 4201,
+      "degraded_mode": false,
+      "frames_received": 59481
+    },
+    {
+      "elapsed_s": 6964.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 678,
+      "fps": 8.03,
+      "frames_processed": 59973,
+      "unique_tracks": 4233,
+      "degraded_mode": false,
+      "frames_received": 59972
+    },
+    {
+      "elapsed_s": 7024.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 9.16,
+      "frames_processed": 60472,
+      "unique_tracks": 4276,
+      "degraded_mode": false,
+      "frames_received": 60472
+    },
+    {
+      "elapsed_s": 7084.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 681,
+      "fps": 9.99,
+      "frames_processed": 61046,
+      "unique_tracks": 4322,
+      "degraded_mode": false,
+      "frames_received": 61045
+    },
+    {
+      "elapsed_s": 7144.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 7.24,
+      "frames_processed": 61502,
+      "unique_tracks": 4349,
+      "degraded_mode": false,
+      "frames_received": 61501
+    },
+    {
+      "elapsed_s": 7204.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 7.7,
+      "frames_processed": 61969,
+      "unique_tracks": 4377,
+      "degraded_mode": false,
+      "frames_received": 61968
+    },
+    {
+      "elapsed_s": 7264.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 7.45,
+      "frames_processed": 62428,
+      "unique_tracks": 4417,
+      "degraded_mode": false,
+      "frames_received": 62427
+    },
+    {
+      "elapsed_s": 7324.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 677,
+      "fps": 7.02,
+      "frames_processed": 62868,
+      "unique_tracks": 4445,
+      "degraded_mode": false,
+      "frames_received": 62867
+    },
+    {
+      "elapsed_s": 7384.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 676,
+      "fps": 7.61,
+      "frames_processed": 63311,
+      "unique_tracks": 4476,
+      "degraded_mode": false,
+      "frames_received": 63310
+    },
+    {
+      "elapsed_s": 7444.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 8.06,
+      "frames_processed": 63785,
+      "unique_tracks": 4511,
+      "degraded_mode": false,
+      "frames_received": 63784
+    },
+    {
+      "elapsed_s": 7504.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 678,
+      "fps": 7.66,
+      "frames_processed": 64251,
+      "unique_tracks": 4543,
+      "degraded_mode": false,
+      "frames_received": 64250
+    },
+    {
+      "elapsed_s": 7564.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 675,
+      "fps": 7.43,
+      "frames_processed": 64717,
+      "unique_tracks": 4579,
+      "degraded_mode": false,
+      "frames_received": 64716
+    },
+    {
+      "elapsed_s": 7624.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 7.59,
+      "frames_processed": 65171,
+      "unique_tracks": 4609,
+      "degraded_mode": false,
+      "frames_received": 65170
+    },
+    {
+      "elapsed_s": 7684.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 7.47,
+      "frames_processed": 65629,
+      "unique_tracks": 4641,
+      "degraded_mode": false,
+      "frames_received": 65629
+    },
+    {
+      "elapsed_s": 7744.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 7.21,
+      "frames_processed": 66074,
+      "unique_tracks": 4674,
+      "degraded_mode": false,
+      "frames_received": 66073
+    },
+    {
+      "elapsed_s": 7804.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 675,
+      "fps": 7.26,
+      "frames_processed": 66494,
+      "unique_tracks": 4709,
+      "degraded_mode": false,
+      "frames_received": 66493
+    },
+    {
+      "elapsed_s": 7864.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 6.78,
+      "frames_processed": 66906,
+      "unique_tracks": 4742,
+      "degraded_mode": false,
+      "frames_received": 66905
+    },
+    {
+      "elapsed_s": 7924.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 676,
+      "fps": 6.6,
+      "frames_processed": 67334,
+      "unique_tracks": 4770,
+      "degraded_mode": false,
+      "frames_received": 67333
+    },
+    {
+      "elapsed_s": 7984.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 5.88,
+      "frames_processed": 67728,
+      "unique_tracks": 4800,
+      "degraded_mode": false,
+      "frames_received": 67728
+    },
+    {
+      "elapsed_s": 8045.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 680,
+      "fps": 5.74,
+      "frames_processed": 68057,
+      "unique_tracks": 4829,
+      "degraded_mode": false,
+      "frames_received": 68056
+    },
+    {
+      "elapsed_s": 8105.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 4.46,
+      "frames_processed": 68345,
+      "unique_tracks": 4855,
+      "degraded_mode": false,
+      "frames_received": 68345
+    },
+    {
+      "elapsed_s": 8165.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 3.52,
+      "frames_processed": 68591,
+      "unique_tracks": 4879,
+      "degraded_mode": false,
+      "frames_received": 68591
+    },
+    {
+      "elapsed_s": 8225.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 675,
+      "fps": 2.65,
+      "frames_processed": 68761,
+      "unique_tracks": 4893,
+      "degraded_mode": false,
+      "frames_received": 68760
+    },
+    {
+      "elapsed_s": 8285.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 3.56,
+      "frames_processed": 68955,
+      "unique_tracks": 4907,
+      "degraded_mode": false,
+      "frames_received": 68955
+    },
+    {
+      "elapsed_s": 8345.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 4.41,
+      "frames_processed": 69189,
+      "unique_tracks": 4928,
+      "degraded_mode": false,
+      "frames_received": 69189
+    },
+    {
+      "elapsed_s": 8405.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 4.19,
+      "frames_processed": 69415,
+      "unique_tracks": 4948,
+      "degraded_mode": false,
+      "frames_received": 69415
+    },
+    {
+      "elapsed_s": 8465.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 4.36,
+      "frames_processed": 69669,
+      "unique_tracks": 4967,
+      "degraded_mode": false,
+      "frames_received": 69668
+    },
+    {
+      "elapsed_s": 8525.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 673,
+      "fps": 2.56,
+      "frames_processed": 69845,
+      "unique_tracks": 4982,
+      "degraded_mode": false,
+      "frames_received": 69845
+    },
+    {
+      "elapsed_s": 8585.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 674,
+      "fps": 3.47,
+      "frames_processed": 70038,
+      "unique_tracks": 4999,
+      "degraded_mode": false,
+      "frames_received": 70037
+    },
+    {
+      "elapsed_s": 8645.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 658,
+      "fps": 4.39,
+      "frames_processed": 70296,
+      "unique_tracks": 5019,
+      "degraded_mode": false,
+      "frames_received": 70296
+    },
+    {
+      "elapsed_s": 8705.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 655,
+      "fps": 3.72,
+      "frames_processed": 70532,
+      "unique_tracks": 5039,
+      "degraded_mode": false,
+      "frames_received": 70532
+    },
+    {
+      "elapsed_s": 8765.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 660,
+      "fps": 4.46,
+      "frames_processed": 70783,
+      "unique_tracks": 5063,
+      "degraded_mode": false,
+      "frames_received": 70782
+    },
+    {
+      "elapsed_s": 8825.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 657,
+      "fps": 4.64,
+      "frames_processed": 71068,
+      "unique_tracks": 5087,
+      "degraded_mode": false,
+      "frames_received": 71067
+    },
+    {
+      "elapsed_s": 8885.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 658,
+      "fps": 5.88,
+      "frames_processed": 71411,
+      "unique_tracks": 5117,
+      "degraded_mode": false,
+      "frames_received": 71410
+    },
+    {
+      "elapsed_s": 8945.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 662,
+      "fps": 4.25,
+      "frames_processed": 71717,
+      "unique_tracks": 5143,
+      "degraded_mode": false,
+      "frames_received": 71717
+    },
+    {
+      "elapsed_s": 9005.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 661,
+      "fps": 4.38,
+      "frames_processed": 71983,
+      "unique_tracks": 5163,
+      "degraded_mode": false,
+      "frames_received": 71982
+    },
+    {
+      "elapsed_s": 9065.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 663,
+      "fps": 3.94,
+      "frames_processed": 72239,
+      "unique_tracks": 5184,
+      "degraded_mode": false,
+      "frames_received": 72238
+    },
+    {
+      "elapsed_s": 9125.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 663,
+      "fps": 4.6,
+      "frames_processed": 72484,
+      "unique_tracks": 5203,
+      "degraded_mode": false,
+      "frames_received": 72484
+    },
+    {
+      "elapsed_s": 9185.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 656,
+      "fps": 5.75,
+      "frames_processed": 72818,
+      "unique_tracks": 5227,
+      "degraded_mode": false,
+      "frames_received": 72817
+    },
+    {
+      "elapsed_s": 9246.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 657,
+      "fps": 6.57,
+      "frames_processed": 73190,
+      "unique_tracks": 5261,
+      "degraded_mode": false,
+      "frames_received": 73189
+    },
+    {
+      "elapsed_s": 9306.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 665,
+      "fps": 6.58,
+      "frames_processed": 73585,
+      "unique_tracks": 5288,
+      "degraded_mode": false,
+      "frames_received": 73584
+    },
+    {
+      "elapsed_s": 9366.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 666,
+      "fps": 6.5,
+      "frames_processed": 73969,
+      "unique_tracks": 5334,
+      "degraded_mode": false,
+      "frames_received": 73969
+    },
+    {
+      "elapsed_s": 9426.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 5.31,
+      "frames_processed": 74318,
+      "unique_tracks": 5357,
+      "degraded_mode": false,
+      "frames_received": 74318
+    },
+    {
+      "elapsed_s": 9486.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 4.94,
+      "frames_processed": 74653,
+      "unique_tracks": 5391,
+      "degraded_mode": false,
+      "frames_received": 74653
+    },
+    {
+      "elapsed_s": 9546.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 673,
+      "fps": 9.53,
+      "frames_processed": 75122,
+      "unique_tracks": 5424,
+      "degraded_mode": false,
+      "frames_received": 75121
+    },
+    {
+      "elapsed_s": 9606.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 667,
+      "fps": 8.68,
+      "frames_processed": 75653,
+      "unique_tracks": 5462,
+      "degraded_mode": false,
+      "frames_received": 75652
+    },
+    {
+      "elapsed_s": 9666.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 9.12,
+      "frames_processed": 76197,
+      "unique_tracks": 5505,
+      "degraded_mode": false,
+      "frames_received": 76196
+    },
+    {
+      "elapsed_s": 9726.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 9.43,
+      "frames_processed": 76744,
+      "unique_tracks": 5546,
+      "degraded_mode": false,
+      "frames_received": 76744
+    },
+    {
+      "elapsed_s": 9786.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 8.63,
+      "frames_processed": 77270,
+      "unique_tracks": 5584,
+      "degraded_mode": false,
+      "frames_received": 77270
+    },
+    {
+      "elapsed_s": 9846.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 660,
+      "fps": 9.08,
+      "frames_processed": 77819,
+      "unique_tracks": 5630,
+      "degraded_mode": false,
+      "frames_received": 77819
+    },
+    {
+      "elapsed_s": 9906.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 673,
+      "fps": 8.86,
+      "frames_processed": 78319,
+      "unique_tracks": 5673,
+      "degraded_mode": false,
+      "frames_received": 78318
+    },
+    {
+      "elapsed_s": 9966.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 665,
+      "fps": 9.15,
+      "frames_processed": 78857,
+      "unique_tracks": 5704,
+      "degraded_mode": false,
+      "frames_received": 78856
+    },
+    {
+      "elapsed_s": 10026.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 8.95,
+      "frames_processed": 79386,
+      "unique_tracks": 5750,
+      "degraded_mode": false,
+      "frames_received": 79385
+    },
+    {
+      "elapsed_s": 10086.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 8.81,
+      "frames_processed": 79916,
+      "unique_tracks": 5788,
+      "degraded_mode": false,
+      "frames_received": 79915
+    },
+    {
+      "elapsed_s": 10146.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 8.25,
+      "frames_processed": 80435,
+      "unique_tracks": 5832,
+      "degraded_mode": false,
+      "frames_received": 80434
+    },
+    {
+      "elapsed_s": 10206.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 8.6,
+      "frames_processed": 80952,
+      "unique_tracks": 5861,
+      "degraded_mode": false,
+      "frames_received": 80951
+    },
+    {
+      "elapsed_s": 10266.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 8.37,
+      "frames_processed": 81465,
+      "unique_tracks": 5902,
+      "degraded_mode": false,
+      "frames_received": 81464
+    },
+    {
+      "elapsed_s": 10326.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 660,
+      "fps": 8.37,
+      "frames_processed": 81991,
+      "unique_tracks": 5952,
+      "degraded_mode": false,
+      "frames_received": 81990
+    },
+    {
+      "elapsed_s": 10386.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 8.09,
+      "frames_processed": 82494,
+      "unique_tracks": 5989,
+      "degraded_mode": false,
+      "frames_received": 82494
+    },
+    {
+      "elapsed_s": 10446.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 666,
+      "fps": 9.02,
+      "frames_processed": 83021,
+      "unique_tracks": 6025,
+      "degraded_mode": false,
+      "frames_received": 83020
+    },
+    {
+      "elapsed_s": 10506.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 666,
+      "fps": 8.35,
+      "frames_processed": 83526,
+      "unique_tracks": 6066,
+      "degraded_mode": false,
+      "frames_received": 83525
+    },
+    {
+      "elapsed_s": 10566.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 666,
+      "fps": 7.79,
+      "frames_processed": 84035,
+      "unique_tracks": 6109,
+      "degraded_mode": false,
+      "frames_received": 84034
+    },
+    {
+      "elapsed_s": 10626.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 663,
+      "fps": 8.33,
+      "frames_processed": 84524,
+      "unique_tracks": 6138,
+      "degraded_mode": false,
+      "frames_received": 84524
+    },
+    {
+      "elapsed_s": 10686.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 664,
+      "fps": 7.83,
+      "frames_processed": 85015,
+      "unique_tracks": 6178,
+      "degraded_mode": false,
+      "frames_received": 85015
+    },
+    {
+      "elapsed_s": 10746.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 7.63,
+      "frames_processed": 85489,
+      "unique_tracks": 6218,
+      "degraded_mode": false,
+      "frames_received": 85488
+    },
+    {
+      "elapsed_s": 10807.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 8.19,
+      "frames_processed": 85972,
+      "unique_tracks": 6250,
+      "degraded_mode": false,
+      "frames_received": 85972
+    },
+    {
+      "elapsed_s": 10867.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 8.38,
+      "frames_processed": 86465,
+      "unique_tracks": 6289,
+      "degraded_mode": false,
+      "frames_received": 86464
+    },
+    {
+      "elapsed_s": 10927.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 667,
+      "fps": 7.95,
+      "frames_processed": 86958,
+      "unique_tracks": 6326,
+      "degraded_mode": false,
+      "frames_received": 86957
+    },
+    {
+      "elapsed_s": 10987.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 662,
+      "fps": 8.07,
+      "frames_processed": 87462,
+      "unique_tracks": 6361,
+      "degraded_mode": false,
+      "frames_received": 87462
+    },
+    {
+      "elapsed_s": 11047.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 661,
+      "fps": 11.73,
+      "frames_processed": 88031,
+      "unique_tracks": 6399,
+      "degraded_mode": false,
+      "frames_received": 88030
+    },
+    {
+      "elapsed_s": 11107.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 665,
+      "fps": 11.38,
+      "frames_processed": 88652,
+      "unique_tracks": 6441,
+      "degraded_mode": false,
+      "frames_received": 88651
+    },
+    {
+      "elapsed_s": 11167.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 10.22,
+      "frames_processed": 89341,
+      "unique_tracks": 6492,
+      "degraded_mode": false,
+      "frames_received": 89340
+    },
+    {
+      "elapsed_s": 11227.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 10.44,
+      "frames_processed": 89996,
+      "unique_tracks": 6535,
+      "degraded_mode": false,
+      "frames_received": 89995
+    },
+    {
+      "elapsed_s": 11287.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 11.02,
+      "frames_processed": 90674,
+      "unique_tracks": 6582,
+      "degraded_mode": false,
+      "frames_received": 90673
+    },
+    {
+      "elapsed_s": 11347.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 662,
+      "fps": 10.32,
+      "frames_processed": 91295,
+      "unique_tracks": 6630,
+      "degraded_mode": false,
+      "frames_received": 91294
+    },
+    {
+      "elapsed_s": 11407.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 10.62,
+      "frames_processed": 91937,
+      "unique_tracks": 6676,
+      "degraded_mode": false,
+      "frames_received": 91937
+    },
+    {
+      "elapsed_s": 11467.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 12.61,
+      "frames_processed": 92643,
+      "unique_tracks": 6719,
+      "degraded_mode": false,
+      "frames_received": 92642
+    },
+    {
+      "elapsed_s": 11527.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 12.85,
+      "frames_processed": 93405,
+      "unique_tracks": 6765,
+      "degraded_mode": false,
+      "frames_received": 93404
+    },
+    {
+      "elapsed_s": 11587.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 661,
+      "fps": 13.02,
+      "frames_processed": 94162,
+      "unique_tracks": 6808,
+      "degraded_mode": false,
+      "frames_received": 94161
+    },
+    {
+      "elapsed_s": 11647.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 11.98,
+      "frames_processed": 94917,
+      "unique_tracks": 6853,
+      "degraded_mode": false,
+      "frames_received": 94916
+    },
+    {
+      "elapsed_s": 11707.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 664,
+      "fps": 13.29,
+      "frames_processed": 95623,
+      "unique_tracks": 6899,
+      "degraded_mode": false,
+      "frames_received": 95622
+    },
+    {
+      "elapsed_s": 11767.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 13.35,
+      "frames_processed": 96401,
+      "unique_tracks": 6946,
+      "degraded_mode": false,
+      "frames_received": 96400
+    },
+    {
+      "elapsed_s": 11827.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 665,
+      "fps": 13.73,
+      "frames_processed": 97157,
+      "unique_tracks": 6991,
+      "degraded_mode": false,
+      "frames_received": 97156
+    },
+    {
+      "elapsed_s": 11887.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 13.39,
+      "frames_processed": 97972,
+      "unique_tracks": 7034,
+      "degraded_mode": false,
+      "frames_received": 97971
+    },
+    {
+      "elapsed_s": 11947.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 663,
+      "fps": 12.68,
+      "frames_processed": 98741,
+      "unique_tracks": 7080,
+      "degraded_mode": false,
+      "frames_received": 98741
+    },
+    {
+      "elapsed_s": 12007.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 661,
+      "fps": 14.2,
+      "frames_processed": 99555,
+      "unique_tracks": 7129,
+      "degraded_mode": false,
+      "frames_received": 99554
+    },
+    {
+      "elapsed_s": 12067.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 666,
+      "fps": 13.78,
+      "frames_processed": 100400,
+      "unique_tracks": 7180,
+      "degraded_mode": false,
+      "frames_received": 100399
+    },
+    {
+      "elapsed_s": 12127.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 6.3,
+      "frames_processed": 101088,
+      "unique_tracks": 7220,
+      "degraded_mode": false,
+      "frames_received": 101087
+    },
+    {
+      "elapsed_s": 12187.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 664,
+      "fps": 6.41,
+      "frames_processed": 101475,
+      "unique_tracks": 7250,
+      "degraded_mode": false,
+      "frames_received": 101475
+    },
+    {
+      "elapsed_s": 12247.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 6.77,
+      "frames_processed": 101872,
+      "unique_tracks": 7286,
+      "degraded_mode": false,
+      "frames_received": 101871
+    },
+    {
+      "elapsed_s": 12307.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 666,
+      "fps": 6.73,
+      "frames_processed": 102275,
+      "unique_tracks": 7320,
+      "degraded_mode": false,
+      "frames_received": 102274
+    },
+    {
+      "elapsed_s": 12367.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 6.0,
+      "frames_processed": 102654,
+      "unique_tracks": 7360,
+      "degraded_mode": false,
+      "frames_received": 102653
+    },
+    {
+      "elapsed_s": 12427.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 662,
+      "fps": 6.38,
+      "frames_processed": 103050,
+      "unique_tracks": 7389,
+      "degraded_mode": false,
+      "frames_received": 103049
+    },
+    {
+      "elapsed_s": 12488.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 6.44,
+      "frames_processed": 103448,
+      "unique_tracks": 7425,
+      "degraded_mode": false,
+      "frames_received": 103448
+    },
+    {
+      "elapsed_s": 12548.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 6.21,
+      "frames_processed": 103846,
+      "unique_tracks": 7452,
+      "degraded_mode": false,
+      "frames_received": 103845
+    },
+    {
+      "elapsed_s": 12608.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 6.6,
+      "frames_processed": 104248,
+      "unique_tracks": 7487,
+      "degraded_mode": false,
+      "frames_received": 104247
+    },
+    {
+      "elapsed_s": 12668.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 6.81,
+      "frames_processed": 104658,
+      "unique_tracks": 7517,
+      "degraded_mode": false,
+      "frames_received": 104657
+    },
+    {
+      "elapsed_s": 12728.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 661,
+      "fps": 6.45,
+      "frames_processed": 105061,
+      "unique_tracks": 7552,
+      "degraded_mode": false,
+      "frames_received": 105061
+    },
+    {
+      "elapsed_s": 12788.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 6.57,
+      "frames_processed": 105460,
+      "unique_tracks": 7582,
+      "degraded_mode": false,
+      "frames_received": 105459
+    },
+    {
+      "elapsed_s": 12848.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 6.33,
+      "frames_processed": 105849,
+      "unique_tracks": 7618,
+      "degraded_mode": false,
+      "frames_received": 105849
+    },
+    {
+      "elapsed_s": 12908.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 6.84,
+      "frames_processed": 106237,
+      "unique_tracks": 7648,
+      "degraded_mode": false,
+      "frames_received": 106236
+    },
+    {
+      "elapsed_s": 12968.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 6.84,
+      "frames_processed": 106644,
+      "unique_tracks": 7682,
+      "degraded_mode": false,
+      "frames_received": 106643
+    },
+    {
+      "elapsed_s": 13028.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 673,
+      "fps": 6.83,
+      "frames_processed": 107056,
+      "unique_tracks": 7714,
+      "degraded_mode": false,
+      "frames_received": 107055
+    },
+    {
+      "elapsed_s": 13088.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 6.64,
+      "frames_processed": 107462,
+      "unique_tracks": 7747,
+      "degraded_mode": false,
+      "frames_received": 107462
+    },
+    {
+      "elapsed_s": 13148.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 6.52,
+      "frames_processed": 107870,
+      "unique_tracks": 7785,
+      "degraded_mode": false,
+      "frames_received": 107869
+    },
+    {
+      "elapsed_s": 13208.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 6.88,
+      "frames_processed": 108279,
+      "unique_tracks": 7814,
+      "degraded_mode": false,
+      "frames_received": 108279
+    },
+    {
+      "elapsed_s": 13268.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 6.58,
+      "frames_processed": 108685,
+      "unique_tracks": 7858,
+      "degraded_mode": false,
+      "frames_received": 108684
+    },
+    {
+      "elapsed_s": 13328.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 6.71,
+      "frames_processed": 109094,
+      "unique_tracks": 7884,
+      "degraded_mode": false,
+      "frames_received": 109093
+    },
+    {
+      "elapsed_s": 13388.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 6.29,
+      "frames_processed": 109483,
+      "unique_tracks": 7917,
+      "degraded_mode": false,
+      "frames_received": 109482
+    },
+    {
+      "elapsed_s": 13448.7,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 6.49,
+      "frames_processed": 109879,
+      "unique_tracks": 7951,
+      "degraded_mode": false,
+      "frames_received": 109878
+    },
+    {
+      "elapsed_s": 13508.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 7.04,
+      "frames_processed": 110277,
+      "unique_tracks": 7986,
+      "degraded_mode": false,
+      "frames_received": 110277
+    },
+    {
+      "elapsed_s": 13568.8,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 666,
+      "fps": 6.78,
+      "frames_processed": 110691,
+      "unique_tracks": 8020,
+      "degraded_mode": false,
+      "frames_received": 110690
+    },
+    {
+      "elapsed_s": 13628.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 6.82,
+      "frames_processed": 111101,
+      "unique_tracks": 8046,
+      "degraded_mode": false,
+      "frames_received": 111100
+    },
+    {
+      "elapsed_s": 13688.9,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 6.8,
+      "frames_processed": 111508,
+      "unique_tracks": 8081,
+      "degraded_mode": false,
+      "frames_received": 111508
+    },
+    {
+      "elapsed_s": 13749.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 667,
+      "fps": 6.64,
+      "frames_processed": 111914,
+      "unique_tracks": 8110,
+      "degraded_mode": false,
+      "frames_received": 111914
+    },
+    {
+      "elapsed_s": 13809.0,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 667,
+      "fps": 3.88,
+      "frames_processed": 112158,
+      "unique_tracks": 8130,
+      "degraded_mode": false,
+      "frames_received": 112158
+    },
+    {
+      "elapsed_s": 13869.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 672,
+      "fps": 3.75,
+      "frames_processed": 112385,
+      "unique_tracks": 8151,
+      "degraded_mode": false,
+      "frames_received": 112384
+    },
+    {
+      "elapsed_s": 13929.1,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 2.95,
+      "frames_processed": 112576,
+      "unique_tracks": 8166,
+      "degraded_mode": false,
+      "frames_received": 112576
+    },
+    {
+      "elapsed_s": 13989.2,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 3.23,
+      "frames_processed": 112776,
+      "unique_tracks": 8185,
+      "degraded_mode": false,
+      "frames_received": 112775
+    },
+    {
+      "elapsed_s": 14049.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 3.67,
+      "frames_processed": 113000,
+      "unique_tracks": 8205,
+      "degraded_mode": false,
+      "frames_received": 112999
+    },
+    {
+      "elapsed_s": 14109.3,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 3.21,
+      "frames_processed": 113206,
+      "unique_tracks": 8222,
+      "degraded_mode": false,
+      "frames_received": 113206
+    },
+    {
+      "elapsed_s": 14169.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 668,
+      "fps": 3.59,
+      "frames_processed": 113425,
+      "unique_tracks": 8237,
+      "degraded_mode": false,
+      "frames_received": 113424
+    },
+    {
+      "elapsed_s": 14229.4,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 3.73,
+      "frames_processed": 113645,
+      "unique_tracks": 8257,
+      "degraded_mode": false,
+      "frames_received": 113644
+    },
+    {
+      "elapsed_s": 14289.5,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 670,
+      "fps": 3.38,
+      "frames_processed": 113849,
+      "unique_tracks": 8278,
+      "degraded_mode": false,
+      "frames_received": 113848
+    },
+    {
+      "elapsed_s": 14349.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 669,
+      "fps": 3.37,
+      "frames_processed": 114055,
+      "unique_tracks": 8299,
+      "degraded_mode": false,
+      "frames_received": 114054
+    },
+    {
+      "elapsed_s": 14409.6,
+      "gpu_used_mb": 487,
+      "process_ram_mb": 671,
+      "fps": 3.45,
+      "frames_processed": 114256,
+      "unique_tracks": 8320,
+      "degraded_mode": false,
+      "frames_received": 114256
+    }
+  ]
+}

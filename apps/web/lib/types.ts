@@ -22,6 +22,10 @@ export interface FrameTiming {
   inference_ms: number;
   encode_ms: number;
   total_ms: number;
+  /** Time the pump blocked waiting on the capture ring buffer. */
+  wait_ms: number;
+  /** Send cost of the *previous* frame; a frame is serialized before its own send ends. */
+  send_ms: number;
 }
 
 export interface FrameResponse {
@@ -42,7 +46,12 @@ export interface FrameResponse {
 export interface StreamFrame {
   kind: "frame";
   frame_id: number;
-  image: string;
+  /**
+   * A `data:image/jpeg;base64,...` URI in `base64` mode. In the default
+   * `binary` mode the field is *absent* — the pixels ride as raw bytes after
+   * this header in the same WebSocket message.
+   */
+  image?: string | null;
   width: number;
   height: number;
   tracks: Track[];

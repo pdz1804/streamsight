@@ -43,12 +43,32 @@ class Track(Detection):
 
 
 class FrameTiming(BaseModel):
-    """Per-stage wall-clock breakdown, milliseconds."""
+    """Per-stage wall-clock breakdown, milliseconds.
+
+    ``wait_ms`` and ``send_ms`` cover the stages *outside* inference. They exist
+    because a frame period and the sum of the inference stages disagreed by more
+    than half the budget, and no field accounted for the difference -- so the
+    cost could be argued about but not measured. They are reported separately
+    from ``total_ms``, which remains the server-side processing cost, so the
+    published latency figure keeps its original meaning.
+
+    ``total_ms`` is the work spent on *this* frame, not the interval between
+    frames. Those were never the same number, and since capture+inference and
+    encode+send run as overlapping stages they are not even the same shape:
+    throughput is set by the slowest stage, while ``total_ms`` is their sum.
+    Read ``fps`` for rate; do not derive it from this.
+    """
 
     decode_ms: float = 0.0
     inference_ms: float = 0.0
     encode_ms: float = 0.0
     total_ms: float = 0.0
+    #: Time the pump blocked waiting for a frame from the capture ring buffer.
+    wait_ms: float = 0.0
+    #: Time to serialize and hand a frame to the socket. Reports the *previous*
+    #: frame's cost: a frame is already serialized by the time its own send
+    #: finishes, so it can never carry that figure itself.
+    send_ms: float = 0.0
 
 
 class FrameResponse(BaseModel):
@@ -78,15 +98,23 @@ class FrameResponse(BaseModel):
 
 
 class StreamFrame(BaseModel):
-    """WebSocket payload: annotated JPEG plus the structured overlay data.
+    """WebSocket payload: annotated frame metadata, and optionally the pixels.
 
-    The image is sent as a base64 data URI so a single text frame carries both
-    the pixels and the boxes, keeping them trivially in sync on the client.
+    Two transports carry this model, and ``image`` is what distinguishes them.
+
+    * **binary** (default): the pixels travel as raw JPEG bytes appended after
+      this object in one length-prefixed message (see :mod:`app.wire`), so
+      ``image`` is ``None``.
+    * **base64**: ``image`` holds a ``data:image/jpeg;base64,...`` URI and the
+      whole thing ships as one JSON text frame.
+
+    Either way the pixels and the boxes arrive together in a single message, so
+    the client never has to correlate them.
     """
 
     kind: Literal["frame"] = "frame"
     frame_id: int
-    image: str
+    image: str | None = None
     width: int
     height: int
     tracks: list[Track]

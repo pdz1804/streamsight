@@ -78,6 +78,17 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3100", "http://127.0.0.1:3100"]
     max_upload_bytes: int = 32 * 1024 * 1024
 
+    # --- mlflow registry (optional, FR-16's closing clause) -----------------
+    # Empty by default: this is the single switch `app.registry` checks before
+    # doing anything mlflow-related, so an unconfigured (or CI) process never
+    # imports mlflow and never makes a network call.
+    mlflow_tracking_uri: str = ""
+    #: Registry model to consult once a tracking URI is set, e.g.
+    #: "streamsight-detector" (see `ml/quantization/benchmark_precision.py`).
+    mlflow_model_name: str = ""
+    #: Stage to resolve; empty defaults to "Production" inside the resolver.
+    mlflow_stage: str = ""
+
     @property
     def weights_dir(self) -> Path:
         return self.models_dir / "weights"

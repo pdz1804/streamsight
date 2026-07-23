@@ -70,6 +70,60 @@ test("live console streams annotated frames with track identities", async ({ pag
   await expect(page.getByRole("button", { name: "Start stream" })).toBeVisible();
 });
 
+// Decoded bitmaps are closed explicitly after drawing, but that is deliberately
+// not asserted here: `performance.memory` reports the JS heap, and an
+// ImageBitmap's pixel buffer does not live there. Removing `bitmap.close()`
+// would not move the number, so an assertion on it would only look like
+// coverage. The leak is held instead by the explicit close in `use-stream.ts`.
+test("the viewer paints at a sustained rate", async ({ page }) => {
+  // Count real draws rather than inferring a rate from arriving messages: a
+  // frame that arrives but never reaches the canvas is exactly the regression
+  // worth catching, and message counts would hide it.
+  await page.addInitScript(() => {
+    const counter = { paints: 0 };
+    (window as unknown as { __paintCounter: typeof counter }).__paintCounter = counter;
+    const draw = CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage = function (
+      this: CanvasRenderingContext2D,
+      ...args: Parameters<typeof draw>
+    ) {
+      counter.paints += 1;
+      return draw.apply(this, args);
+    };
+  });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start stream" }).click();
+  await expect
+    .poll(async () => await canvasSignature(page), { timeout: 45_000 })
+    .not.toBeNull();
+
+  // Let the stream reach steady state before timing it.
+  await page.waitForTimeout(3_000);
+
+  const sample = async () =>
+    page.evaluate(() => ({
+      paints: (window as unknown as { __paintCounter: { paints: number } }).__paintCounter.paints,
+      at: performance.now(),
+    }));
+
+  const before = await sample();
+  await page.waitForTimeout(15_000);
+  const after = await sample();
+
+  const seconds = (after.at - before.at) / 1000;
+  const paintsPerSecond = (after.paints - before.paints) / seconds;
+  console.log(`viewer paint rate: ${paintsPerSecond.toFixed(2)} fps over ${seconds.toFixed(1)}s`);
+
+  // A deliberately loose floor: this is a stall detector, not a performance
+  // gate. It runs on whatever hardware is present, and the measured rate is
+  // reported in the benchmark docs rather than asserted here, where a tight
+  // bound would only flake.
+  expect(paintsPerSecond).toBeGreaterThan(4);
+
+  await page.getByRole("button", { name: "Stop stream" }).click();
+});
+
 test("metrics dashboard reports live telemetry", async ({ page }) => {
   await page.goto("/metrics");
   await expect(page.getByRole("heading", { name: "Runtime telemetry" })).toBeVisible();

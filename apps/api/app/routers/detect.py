@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import logging
+from typing import Literal
 
 from fastapi import APIRouter, File, Query, UploadFile, WebSocket
 from pydantic import BaseModel, Field
@@ -76,8 +77,17 @@ async def detect_stream(
     settings: SettingsDep,
     source: str = Query("sample", description="Source id, device index, or rtsp:// URL"),
     loop: bool = Query(True, description="Restart file sources when they end"),
+    encoding: Literal["binary", "base64"] = Query(
+        "binary",
+        description="Wire format: length-prefixed binary frames, or base64 data URIs in JSON",
+    ),
 ) -> None:
-    """Stream annotated frames for the requested source until the client leaves."""
+    """Stream annotated frames for the requested source until the client leaves.
+
+    ``encoding=base64`` keeps the original all-JSON transport for clients that
+    cannot read binary messages. It costs a third more bytes plus an encode and
+    a decode, so it is not the default.
+    """
     await websocket.accept()
     try:
         spec = registry.resolve(source)
@@ -86,7 +96,7 @@ async def detect_stream(
         await websocket.close()
         return
 
-    session = StreamSession(websocket, runtime, settings, spec, loop_source=loop)
+    session = StreamSession(websocket, runtime, settings, spec, loop_source=loop, encoding=encoding)
     try:
         await session.run()
     finally:

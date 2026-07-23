@@ -77,9 +77,16 @@ bus/truck, at the COCO protocol's `conf=0.001, max_det=100`:
 The MLflow promotion gate reads exactly these reports and transitioned `streamsight-detector` v1
 to Production on that basis. See [MLOPS](docs/MLOPS.md).
 
-The **browser viewer** runs slower than the pipeline figures above, at roughly **13 FPS** on 1080p
-source, because annotation, JPEG encoding and transport are on the critical path. End-to-end
-send-to-paint latency is **~12 ms**. Both numbers are shown live in the console.
+The **browser viewer** runs slower than the pipeline figures above — annotation, JPEG encoding and
+WebSocket transport are on its critical path. It last measured **13.4 FPS** at **~12 ms**
+send-to-paint; both are shown live in the console. That figure predates the binary-transport and
+pipelined-pump rework and is awaiting re-measurement on a GPU that is not power-throttled — see
+[BENCHMARKS](docs/BENCHMARKS.md#a-third-change-not-yet-re-measured).
+
+**Stability (PRD NFR-6): 4 hours continuous, passed.** 114,256 frames, 0 reconnects, 0 errors, never
+degraded. GPU memory took a single 52 MiB step and then held flat across 136 samples spanning 2.25
+hours — a step allocation, not a leak, which would ramp. Process RSS *fell* 1393 → 671 MiB as the
+1000-frame `gc.collect()` interval did its job. Evidence: `ml/eval/reports/soak.json`.
 
 ## Quick start
 

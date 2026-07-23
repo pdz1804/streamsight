@@ -9,13 +9,25 @@ flowchart LR
   RT["runtime.py<br/>single model owner<br/>lock · backend ladder · degradation"]
   DET["detector.py<br/>YOLO11n + ByteTrack<br/>model.track(persist=True)"]
   ANN["annotate.py<br/>boxes + id chips<br/>stable colour per id"]
-  ENC["JPEG encode<br/>base64 data URI"]
-  WS["WebSocket /detect/stream"]
-  UI["Next.js canvas<br/>:3100"]
+  Q["depth-1 queue<br/>drop-oldest"]
+  ENC["JPEG encode<br/>raw bytes"]
+  WS["WebSocket /detect/stream<br/>header + JPEG, one message"]
+  UI["Next.js canvas<br/>createImageBitmap<br/>:3100"]
   DB["SQLite<br/>frames + track lifecycles"]
 
-  SRC --> CAP --> RT --> DET --> ANN --> ENC --> WS --> UI
+  SRC --> CAP --> RT --> DET --> ANN --> Q --> ENC --> WS --> UI
   RT --> DB
+
+  subgraph produce ["producer task"]
+    CAP
+    RT
+    DET
+    ANN
+  end
+  subgraph consume ["consumer task"]
+    ENC
+    WS
+  end
 ```
 
 ## Why the pieces are shaped this way
@@ -33,6 +45,28 @@ The detector letterboxes every input to `imgsz` (640 px) regardless of how large
 Carrying 1080p through inference, annotation and JPEG encoding therefore costs real time and buys
 no accuracy. Capping frame width on the producer thread measured **~39% higher viewer throughput**
 on 1080p sources.
+
+### Capture+inference and encode+send are separate tasks
+
+A single `read → infer → encode → send` loop makes the frame period the *sum* of every stage:
+inference for frame N+1 cannot begin until frame N is on the wire. Splitting the pump lets those
+overlap, so the period approaches the slowest stage instead.
+
+The queue between them is depth-1 and drops the oldest pending frame. Blocking the producer would
+convert backpressure into latency, and a live view must stay current rather than complete — the same
+trade-off the capture ring buffer already makes upstream.
+
+Only the consumer writes to the socket. Starlette's WebSocket is not safe to send from two tasks at
+once, so a producer failure travels through the queue as an error sentinel rather than being
+reported directly.
+
+### Pixels leave as bytes, not base64
+
+One binary message per frame carries a length-prefixed JSON header followed by the raw JPEG. Base64
+inflates the payload by a third, costs an encode on the server and a decode in the browser, and the
+resulting `data:` URI decodes on the main thread. None of that work moves a pixel. Keeping header
+and image in a *single* message means two concurrent sends can never pair a header with the wrong
+image. `?encoding=base64` still serves the older transport unchanged.
 
 ### One runtime owns the model
 

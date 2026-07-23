@@ -1,0 +1,19 @@
+{
+  "dataset": "coco8",
+  "archives": {
+    "yolo11n.pt": {
+      "source": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo11n.pt",
+      "bytes": 5613764,
+      "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+      "pinned_at": "2026-07-23T04:08:37+00:00"
+    },
+    "coco8.zip": {
+      "source": "https://github.com/ultralytics/assets/releases/download/v0.0.0/coco8.zip",
+      "bytes": 443158,
+      "sha256": "54c67fe9ef88313e021ec0e92b73c200167bb0a86633e8df8658d832cca828c9",
+      "pinned_at": "2026-07-23T04:08:38+00:00"
+    }
+  },
+  "extracted": {},
+  "updated_at": "2026-07-23T04:16:47+00:00"
+}

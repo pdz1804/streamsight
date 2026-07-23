@@ -64,6 +64,32 @@ jobs:
       - name: Pytest (fast tier)
         run: pytest -q -m "not slow"
 
+      # NFR-8's "CI smoke test on COCO8" gap. The unit tests above only prove
+      # the conversion functions are correct in isolation; this proves they are
+      # correct *wired together* -- dataset load, real CPU inference, box and
+      # category-id conversion, pycocotools scoring -- which is exactly where a
+      # COCO harness silently reports zero. See ml/eval/smoke_coco8.py's module
+      # docstring for why the bound is loose and why a broken box conversion
+      # still fails it (verified locally: swapping width/height drove mAP75
+      # from 0.73 to 0.00).
+      - name: Cache COCO8 smoke-test assets
+        uses: actions/cache@v4
+        with:
+          path: |
+            ml/data/raw/coco8
+            ml/models/weights/yolo11n.pt
+          # Keyed on the pinned asset releases in smoke_coco8.py, not the file
+          # hash, so touching an unrelated part of the script does not bust a
+          # cache that is still valid.
+          key: coco8-smoke-assets-coco8-v0.0.0-yolo11n-v8.4.0
+
+      - name: COCO8 smoke test (NFR-8)
+        env:
+          # Defence in depth: fp32_cpu is hardcoded in smoke_coco8.py and never
+          # touches a GPU regardless, but hosted runners have none anyway.
+          CUDA_VISIBLE_DEVICES: ""
+        run: python ml/eval/smoke_coco8.py
+
   web:
     name: web (node 22)
     runs-on: ubuntu-latest

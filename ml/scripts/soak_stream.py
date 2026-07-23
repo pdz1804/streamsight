@@ -21,6 +21,7 @@ import asyncio
 import contextlib
 import json
 import statistics
+import sys
 import time
 import urllib.request
 from datetime import UTC, datetime
@@ -29,6 +30,10 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 REPORTS_DIR = REPO_ROOT / "ml" / "eval" / "reports"
+
+sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
+
+from app.wire import decode_stream_frame  # noqa: E402
 
 #: Samples inside this window after start are excluded from drift analysis.
 WARMUP_S = 120.0
@@ -55,6 +60,14 @@ async def consume_stream(ws_url: str, stop: asyncio.Event, counter: dict[str, in
                 counter["connections"] += 1
                 while not stop.is_set():
                     message = await asyncio.wait_for(socket.recv(), timeout=30)
+                    # Frames arrive as binary (header + JPEG) on the default
+                    # transport; status messages are always text. Soaking the
+                    # default is the point -- opting into base64 here would
+                    # exercise a path no browser uses.
+                    if isinstance(message, bytes | bytearray):
+                        decode_stream_frame(bytes(message))
+                        counter["frames"] += 1
+                        continue
                     payload = json.loads(message)
                     if payload.get("kind") == "frame":
                         counter["frames"] += 1

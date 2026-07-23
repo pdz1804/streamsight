@@ -26,7 +26,7 @@ against a 3.5 GB budget, 12 ms end-to-end browser latency.
 |---|---|---|
 | Object detection | YOLO11n, 2.6 M params, COCO-pretrained | 48.5 FPS @ 640 px |
 | Multi-object tracking | ByteTrack via Ultralytics `model.track(persist=True)` | 176 unique identities over a 200-frame clip |
-| Real-time streaming | WebSocket, server-side annotation, base64 JPEG | 13.4 FPS viewer, ~12 ms send-to-paint |
+| Real-time streaming | WebSocket, server-side annotation, binary JPEG framing, pipelined pump | 13.4 FPS viewer / ~12 ms send-to-paint, pre-rework |
 | Runtime model swap | Locked rebuild of the detector, no restart | Verified live via the settings UI |
 | Graceful degradation | 640 -> 480 px -> cheaper backend -> CPU | Exercisable via `POST /config/degrade` |
 | Quantization | ONNX Runtime static QDQ with held-out calibration | 4.36 MB artifact, 93.3% recall |
@@ -319,6 +319,32 @@ Two fixes:
 Result: server latency **101 ms -> 48 ms**, viewer **8.8 -> 13.4 FPS**, end-to-end send-to-paint
 **~12 ms** against a 100 ms target.
 
+### Round two: transport and pipelining
+
+Instrumenting the remaining gap showed the frame period (81 ms) exceeding the sum of the measured
+server stages (39 ms) by more than half the budget, with no field accounting for the difference.
+Two causes, fixed separately so each could be attributed:
+
+1. **Base64 left the hot path.** Frames now ship as one binary message — a length-prefixed JSON
+   header followed by the raw JPEG — and the browser decodes them with `createImageBitmap`, off the
+   main thread. A `data:` URI decodes on the main thread and carries a third more bytes to get
+   there. Measured: **0.76x bytes per frame**, matching the expected 1/1.33.
+2. **The pump stopped running in series.** `read → infer → encode → send` made the frame period the
+   *sum* of every stage. It is now a producer task and a consumer task over a depth-1 queue, so
+   encode and send of frame N overlap inference of frame N+1.
+
+The second change initially removed the loop's accidental self-throttling: with a drop-oldest queue,
+a client whose socket stalled left the producer inferring at full rate forever, discarding results
+and still writing detections nobody would see. The queue's job is pipelining, not freshness — the
+capture ring buffer already provides that — so the producer now waits on the queue, which restores
+pacing and keeps the overlap. A regression test stalls the socket and asserts the producer runs no
+more than a pipeline-depth of frames ahead.
+
+**Throughput after this rework is not yet measured.** The attempt was invalid: the host GPU was
+pinned near its 210 MHz floor against a 2100 MHz ceiling at 52 °C — power-starved, not thermally
+throttled — and the *unchanged* pipeline benchmark read 8.07 FPS against its own 48.5 baseline. A
+number measured there would describe the laptop's power state, not this work.
+
 **A measurement trap worth remembering:** an early profiling run reported 739 ms per frame instead of
 30 ms, because it shared the 4 GB GPU with the running API. On a small GPU, contention is not noise
 — it is the dominant term. Every benchmark here runs with the GPU otherwise idle.
@@ -407,7 +433,12 @@ A test that only checks a heading exists would pass against a completely broken 
   OpenVINO CPU path cleared real-time at 98.4% recall.
 - Profiled and optimised the streaming path from **8.8 to 13.4 FPS** (server latency 101 ms -> 48 ms)
   by eliminating per-frame syscalls and moving downscaling ahead of inference.
-- Shipped with **129 automated tests (115 API, 14 ML) and 5 browser E2E tests** asserting observable behaviour, plus
+- Rebuilt the streaming transport to **binary framing** and split the pump into overlapping
+  producer/consumer tasks — then caught, in review, that the split had removed the loop's implicit
+  backpressure, and restored it without losing the overlap.
+- Proved **4-hour stability** (PRD NFR-6): 114,256 frames, zero errors, GPU memory flat after a
+  single step allocation, process RSS falling 1393 → 671 MiB under periodic collection.
+- Shipped with **152 automated tests and 6 browser E2E tests** asserting observable behaviour, plus
   documented degradation drills exercisable through the API.
 
 ## 14. Skills demonstrated
