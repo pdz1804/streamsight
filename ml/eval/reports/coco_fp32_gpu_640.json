@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-07-23 03:27 UTC",
+  "engine": "fp32_gpu",
+  "backend": "fp32_gpu",
+  "label": "FP32 - PyTorch GPU",
+  "device": "cuda",
+  "imgsz": 640,
+  "conf_threshold": 0.001,
+  "iou_threshold": 0.7,
+  "max_det": 100,
+  "images": 2968,
+  "annotations": "ml\\data\\processed\\coco_person_vehicle\\instances_val2017_person_vehicle.json",
+  "class_set": "prd6",
+  "classes": [
+    "person",
+    "bicycle",
+    "car",
+    "motorcycle",
+    "bus",
+    "truck"
+  ],
+  "category_ids": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8
+  ],
+  "detections": 146837,
+  "detections_dropped_unmapped": 0,
+  "gpu": {
+    "name": "NVIDIA RTX A1000 Laptop GPU",
+    "available": true
+  },
+  "map50_95": 0.42114,
+  "map50": 0.61053,
+  "map75": 0.44429,
+  "map_small": 0.18601,
+  "map_medium": 0.4268,
+  "map_large": 0.6741,
+  "ar_max100": 0.56102,
+  "per_class_ap50_95": {
+    "1": 0.53101,
+    "2": 0.27473,
+    "3": 0.37241,
+    "4": 0.4308,
+    "6": 0.62992,
+    "8": 0.28795
+  }
+}

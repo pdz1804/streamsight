@@ -53,3 +53,6 @@ ml/quantization/reports/
 .DS_Store
 Thumbs.db
 .claude/
+
+# Stray stderr sidecars from Start-Process redirection
+*.log.err

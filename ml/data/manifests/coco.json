@@ -1,0 +1,32 @@
+{
+  "dataset": "coco",
+  "archives": {
+    "val2017.zip": {
+      "source": "https://s3.amazonaws.com/images.cocodataset.org/zips/val2017.zip",
+      "bytes": 815585330,
+      "sha256": "4f7e2ccb2866ec5041993c9cf2a952bbed69647b115d0f74da7ce8f4bef82f05",
+      "pinned_at": "2026-07-22T10:14:32+00:00"
+    },
+    "annotations_trainval2017.zip": {
+      "source": "https://s3.amazonaws.com/images.cocodataset.org/annotations/annotations_trainval2017.zip",
+      "bytes": 252907541,
+      "sha256": "113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268",
+      "pinned_at": "2026-07-22T10:15:25+00:00"
+    }
+  },
+  "extracted": {
+    "val2017.zip": {
+      "members": 5001,
+      "path": "ml/data/raw/coco"
+    },
+    "annotations_trainval2017.zip": {
+      "members": 6,
+      "path": "ml/data/raw/coco"
+    }
+  },
+  "source": {
+    "images": "https://s3.amazonaws.com/images.cocodataset.org/zips/val2017.zip",
+    "annotations": "https://s3.amazonaws.com/images.cocodataset.org/annotations/annotations_trainval2017.zip"
+  },
+  "updated_at": "2026-07-22T10:15:37+00:00"
+}

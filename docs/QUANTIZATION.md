@@ -82,9 +82,31 @@ Excluding the final module's 108 nodes from quantization recovered it:
 The head is identified structurally, as the highest `/model.N/` index in the graph, so the exclusion
 keeps working if the architecture depth changes.
 
+## What INT8 actually cost in accuracy
+
+Standard COCO mAP on the PRD's six-class subset (2,968 val2017 images, `conf=0.001`,
+`max_det=100`), which is the number the promotion gate reads:
+
+| Backend | mAP50-95 | mAP50 | Absolute drop | Artifact |
+|---|---|---|---|---|
+| `fp32_gpu` | 0.4211 | 0.6105 | baseline | 5.35 MB |
+| `openvino_cpu` | 0.4211 | 0.6133 | 0.00 pp | 5.45 MB |
+| `int8_onnx_cpu` | **0.4172** | 0.6080 | **0.40 pp** | 4.36 MB |
+
+**0.40 points against a 3.00-point gate.** Keeping the detection head in float and calibrating on
+held-out footage did their job: 8-bit weights cost essentially nothing here. OpenVINO's FP16 IR is
+lossless to four decimals.
+
+Note this is a *different* measurement from the recall figures below. mAP integrates the whole
+precision/recall curve at `conf=0.001`; recall-vs-FP32 is agreement on the boxes the app actually
+serves at its 0.25 threshold. INT8 loses 0.40 pp of mAP but 6.7 pp of served-box agreement, because
+quantization perturbs scores most where they are near the serving threshold. Both are true; they
+answer different questions.
+
 ## Was INT8 worth it here?
 
-Measured on this machine: **no**, and the frontier is what makes that answerable.
+On accuracy, yes: 0.40 pp is a rounding error. On **throughput**, measured on this machine: **no**,
+and the frontier is what makes that answerable.
 
 | Backend | FPS | Recall | Artifact |
 |---|---|---|---|
@@ -111,8 +133,8 @@ The host is an RTX A1000 Laptop GPU (4096 MiB) with an Intel i9-12900H.
 | Export | Target hardware | Artifact | Throughput | Recall vs FP32 | Choose it when | On this host |
 |---|---|---|---|---|---|---|
 | **ONNX FP16** | NVIDIA GPU through ONNX Runtime's CUDA provider; the graph itself is portable to any ORT-supported runtime | 5.14 MB | not measured | not measured | You need a portable graph and a GPU runtime that is not TensorRT, or half the FP32 file size for the same architecture | **Built, does not run.** The frontier sweep failed to create the CUDA provider: `CUDA_PATH is set but CUDA wasnt able to be loaded`. Not diagnosed further - `fp32_gpu` covers the GPU path and is faster to reach |
-| **ONNX INT8** | x86 CPU through ORT's CPU provider (`QLinearConv`); the smallest artifact, so also the memory-constrained target | 4.36 MB | 15.1 FPS | 93.3% | The target has no OpenVINO support and artifact size or memory is the binding constraint | **Built and running.** In the backend ladder as `int8_onnx_cpu` |
-| **OpenVINO** | Intel CPU (and Intel iGPU/NPU through the same IR) | 5.45 MB | 35.8 FPS | 98.4% | The target is an Intel CPU. On this machine it is the best CPU option by a wide margin - 2.4x the INT8 throughput with 5 points more recall | **Built and running.** In the ladder as `openvino_cpu`; reaches 35.8 FPS with no GPU at all |
+| **ONNX INT8** | x86 CPU through ORT's CPU provider (`QLinearConv`); the smallest artifact, so also the memory-constrained target | 4.36 MB | 15.1 FPS | 93.3% (mAP50-95 0.4172) | The target has no OpenVINO support and artifact size or memory is the binding constraint | **Built and running.** In the backend ladder as `int8_onnx_cpu`; the Production version in the MLflow registry |
+| **OpenVINO** | Intel CPU (and Intel iGPU/NPU through the same IR) | 5.45 MB | 35.8 FPS | 98.4% (mAP50-95 0.4211) | The target is an Intel CPU. On this machine it is the best CPU option by a wide margin - 2.4x the INT8 throughput with 5 points more recall | **Built and running.** In the ladder as `openvino_cpu`; reaches 35.8 FPS with no GPU at all |
 | **TensorRT** | NVIDIA GPU with CUDA 12.x | not built on this host | not built on this host | not built on this host | The target is an NVIDIA GPU on a platform where TensorRT 10 installs - it is the fastest NVIDIA path and the PRD's intended INT8 route | **Not built.** TensorRT 10 has no installable Windows wheel; TensorRT 11 removes an API Ultralytics 8.3.37 calls, and the 11 path needs ModelOpt, which needs torch >= 2.8 against a pinned torch 2.3.1 stack. Full reasoning below |
 
 For reference on the same run, the unquantized baselines: `fp32_gpu` 48.5 FPS at 5.35 MB, `fp32_cpu`

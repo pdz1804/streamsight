@@ -62,6 +62,21 @@ Two results worth calling out:
 Full report: [`ml/eval/reports/frontier.md`](ml/eval/reports/frontier.md), with a plot at
 `frontier.png` and machine-readable results in `frontier.json`.
 
+### Accuracy: COCO mAP on the 6-class subset
+
+Standard pycocotools mAP over the 2,968 val2017 images containing person/bicycle/car/motorcycle/
+bus/truck, at the COCO protocol's `conf=0.001, max_det=100`:
+
+| Backend | mAP50-95 | mAP50 | Drop vs FP32 |
+|---|---|---|---|
+| FP32 PyTorch GPU | **0.4211** | 0.6105 | baseline |
+| OpenVINO CPU | **0.4211** | 0.6133 | 0.00 pp |
+| INT8 ONNX CPU | **0.4172** | 0.6080 | **0.40 pp** |
+
+**INT8 costs 0.40 points of mAP for a 19% smaller artifact**, against the PRD's 3.00-point gate.
+The MLflow promotion gate reads exactly these reports and transitioned `streamsight-detector` v1
+to Production on that basis. See [MLOPS](docs/MLOPS.md).
+
 The **browser viewer** runs slower than the pipeline figures above, at roughly **13 FPS** on 1080p
 source, because annotation, JPEG encoding and transport are on the critical path. End-to-end
 send-to-paint latency is **~12 ms**. Both numbers are shown live in the console.
@@ -170,7 +185,14 @@ survives a reload.
   (one operator, one screen) it is not a problem, but it is a real constraint, not an oversight.
 - **No authentication.** Local single-user demo. `POST /config/degrade` and `POST /config/model`
   are unauthenticated and take no body, so do not expose this to a network you do not control.
-- **No fine-tuning yet.** The model is pretrained COCO. Training is a cloud-GPU phase.
+- **No fine-tuning yet.** The model is pretrained COCO. `ml/scripts/train_colab.py` is written and
+  resumable but has never been executed: it needs a Google account and a free T4 session.
+- **No MOT17 tracking metrics.** `ml/eval/eval_mot.py` is written and unit-tested, but MOTChallenge
+  is registration-gated and cannot be fetched unattended. Supply the zip to
+  `ml/data/scripts/download_mot.py --zip` and MOTA/IDF1/IDSW follow.
+- **The MLflow registry is advisory.** The gate registers and promotes, but the API resolves
+  artifacts from fixed paths and has no MLflow code. Promotion records a decision; it does not
+  change what serves. See [MLOPS](docs/MLOPS.md).
 
 ## License
 

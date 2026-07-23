@@ -61,6 +61,10 @@ from dataset_integrity import (
 
 MANIFEST_NAME = "coco"
 
+#: Used to record extraction locations relative to the repo, so the committed
+#: manifest does not carry one machine's absolute paths.
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
 S3_PREFIX = "https://s3.amazonaws.com/images.cocodataset.org"
 HTTP_PREFIX = "http://images.cocodataset.org"
 
@@ -170,7 +174,15 @@ def acquire(
     print(f"  sha256 {'pinned' if newly_pinned else 'matches the pin'}")
 
     members = extract(archive, dest)
-    manifest["extracted"][key] = {"members": members, "path": str(dest)}
+    # Recorded relative to the repo root: the manifest is committed as the
+    # integrity pin, and an absolute path would bake one machine's layout into
+    # a shared file. The field is informational -- nothing compares it -- so the
+    # portable spelling costs nothing.
+    try:
+        location = dest.resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        location = dest.resolve().as_posix()
+    manifest["extracted"][key] = {"members": members, "path": location}
 
 
 def report(dest: Path, *, skip_images: bool) -> bool:

@@ -254,6 +254,30 @@ pipeline including decode and tracking, 10 warmup frames discarded.
 | `fp32_cpu` | 640px | cpu | **15.4** | 71.7 | n/a | 100.0% | 99.9% | 0.999 | |
 | `int8_onnx_cpu` | 640px | cpu | **15.1** | 72.6 | n/a | 93.3% | 88.8% | 0.956 | |
 
+### Standard accuracy: COCO mAP
+
+Throughput without accuracy is half an answer. Measured with pycocotools on the PRD's six-class
+person+vehicle subset — 2,968 val2017 images, 14,323 annotations, COCO protocol (`conf=0.001`,
+`max_det=100`):
+
+| Backend | mAP50-95 | mAP50 | Absolute drop vs FP32 |
+|---|---|---|---|
+| `fp32_gpu` | **0.4211** | 0.6105 | baseline |
+| `openvino_cpu` | **0.4211** | 0.6133 | 0.00 pp |
+| `int8_onnx_cpu` | **0.4172** | 0.6080 | **0.40 pp** |
+
+**INT8 costs 0.40 percentage points against a 3.00-point gate.** That single number justifies the
+whole quantization approach: keeping the detection head in float and calibrating on held-out
+footage made 8-bit weights essentially free in accuracy terms.
+
+It also cross-checks the harness. A wrong box conversion or a wrong COCO category mapping — the two
+classic silent failures — would produce a mAP near zero, not 0.42. And 0.42 on six well-represented
+classes sits exactly where it should relative to YOLO11n's published 39.5% over all 80.
+
+Note that mAP (0.40 pp) and served-box agreement (6.7 pp) disagree about INT8's cost, and both are
+correct: mAP integrates the full PR curve at `conf=0.001`, while agreement scores the boxes the app
+serves at 0.25. Quantization perturbs scores most near the serving threshold.
+
 ### What the numbers actually say
 
 **The 4 GB budget was never the constraint.** 316 MiB peak, about 9% of the budget. The design
@@ -348,10 +372,13 @@ A test that only checks a heading exists would pass against a completely broken 
   absent and reported as such.
 - **FP16 ONNX on GPU does not load.** ONNX Runtime needs cuDNN 8 on `CUDA_PATH`; the installed CUDA
   12.0 toolkit does not ship it. Detected at warmup, reason shown in the UI.
-- **Accuracy is agreement against an FP32 baseline on one clip**, not COCO mAP or MOT17 IDF1. Those
-  need the evaluation datasets and belong to the training phase.
-- **Stability verified over minutes, not the planned 4 hours.**
-- **No fine-tuning.** The model is pretrained COCO.
+- **No MOT17 MOTA/IDF1.** The harness exists and is unit-tested, but MOTChallenge is
+  registration-gated, so the dataset cannot be fetched unattended.
+- **No fine-tuning.** The model is pretrained COCO; `train_colab.py` needs a Google session.
+- **The MLflow registry is advisory.** The gate promotes; the API resolves artifacts by fixed path
+  and contains no MLflow code, so promotion records a decision rather than changing what serves.
+- **mAP is measured on val2017 with a COCO-pretrained model.** That is a sound quantization
+  comparison, but it says nothing about a fine-tuned model, which does not exist yet.
 
 ---
 
@@ -364,8 +391,15 @@ A test that only checks a heading exists would pass against a completely broken 
   and PyTorch, where usability is proven by warmup rather than assumed by load, and failures are
   recorded per configuration and surfaced in the UI.
 - Implemented **static QDQ INT8 quantization** with held-out calibration; diagnosed a total accuracy
-  collapse (0% recall) to detection-head quantization and recovered **93.3% recall vs FP32** by
-  excluding the head structurally.
+  collapse (0% recall) to detection-head quantization and recovered to **0.4172 COCO mAP50-95, a
+  0.40-point drop from the FP32 baseline**, by excluding the head structurally.
+- Built the **MLflow tracking and model-registry promotion gate** that turns on that measurement:
+  registers the candidate, compares absolute mAP drop against a 3-point threshold on a matched class
+  set, and falls back to the FP16 sibling on failure.
+- Caught a **critical evaluation defect in review**: the mAP harness reused a detector whose
+  Ultralytics `model.track` call had permanently attached tracker callbacks, so `predict` returned
+  Kalman-smoothed track boxes with a 0.264 confidence floor instead of 100 detections down to 0.015.
+  Every mAP number would have been plausible and wrong.
 - Caught that framework export flags silently produced FP32 graphs with quantized filenames, by
   **verifying artifact dtypes** rather than trusting the export API.
 - Produced an **accuracy-throughput Pareto frontier** scored on post-NMS detection agreement instead

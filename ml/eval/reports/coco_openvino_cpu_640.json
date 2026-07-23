@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-07-23 03:34 UTC",
+  "engine": "openvino_cpu",
+  "backend": "openvino_cpu",
+  "label": "OpenVINO - CPU",
+  "device": "cpu",
+  "imgsz": 640,
+  "conf_threshold": 0.001,
+  "iou_threshold": 0.7,
+  "max_det": 100,
+  "images": 2968,
+  "annotations": "ml\\data\\processed\\coco_person_vehicle\\instances_val2017_person_vehicle.json",
+  "class_set": "prd6",
+  "classes": [
+    "person",
+    "bicycle",
+    "car",
+    "motorcycle",
+    "bus",
+    "truck"
+  ],
+  "category_ids": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8
+  ],
+  "detections": 146802,
+  "detections_dropped_unmapped": 0,
+  "gpu": {
+    "name": "NVIDIA RTX A1000 Laptop GPU",
+    "available": true
+  },
+  "map50_95": 0.42113,
+  "map50": 0.61326,
+  "map75": 0.44519,
+  "map_small": 0.18794,
+  "map_medium": 0.42862,
+  "map_large": 0.67026,
+  "ar_max100": 0.56183,
+  "per_class_ap50_95": {
+    "1": 0.5351,
+    "2": 0.27655,
+    "3": 0.37507,
+    "4": 0.4311,
+    "6": 0.63254,
+    "8": 0.27641
+  }
+}
