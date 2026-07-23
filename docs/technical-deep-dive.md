@@ -26,7 +26,7 @@ against a 3.5 GB budget, 12 ms end-to-end browser latency.
 |---|---|---|
 | Object detection | YOLO11n, 2.6 M params, COCO-pretrained | 48.5 FPS @ 640 px |
 | Multi-object tracking | ByteTrack via Ultralytics `model.track(persist=True)` | 176 unique identities over a 200-frame clip |
-| Real-time streaming | WebSocket, server-side annotation, binary JPEG framing, pipelined pump | 13.4 FPS viewer / ~12 ms send-to-paint, pre-rework |
+| Real-time streaming | WebSocket, server-side annotation, binary JPEG framing, pipelined pump | +74% delivered throughput vs the serial base64 pump, same-host A/B |
 | Runtime model swap | Locked rebuild of the detector, no restart | Verified live via the settings UI |
 | Graceful degradation | 640 -> 480 px -> cheaper backend -> CPU | Exercisable via `POST /config/degrade` |
 | Quantization | ONNX Runtime static QDQ with held-out calibration | 4.36 MB artifact, 93.3% recall |
@@ -340,10 +340,17 @@ capture ring buffer already provides that — so the producer now waits on the q
 pacing and keeps the overlap. A regression test stalls the socket and asserts the producer runs no
 more than a pipeline-depth of frames ahead.
 
-**Throughput after this rework is not yet measured.** The attempt was invalid: the host GPU was
-pinned near its 210 MHz floor against a 2100 MHz ceiling at 52 °C — power-starved, not thermally
-throttled — and the *unchanged* pipeline benchmark read 8.07 FPS against its own 48.5 baseline. A
-number measured there would describe the laptop's power state, not this work.
+Measured as an A/B against the previous commit, both builds running on the same host minutes apart:
+**7.81 → 12.83 FPS from pipelining alone, then 13.58 FPS with binary framing** — +74% combined, at
+−24% bytes per frame.
+
+**Getting that number honestly took two attempts.** The first comparison put the new build at 6.78
+FPS against a 13.4 FPS historical baseline and looked like a serious regression. The control saved
+it: the *unchanged* pipeline benchmark, which touches no streaming code, simultaneously read 8.07
+FPS against its own 48.5 baseline. `nvidia-smi -q -d POWER` showed the laptop had cut the GPU's
+power limit to 20 W from a 35 W default while the battery charged, parking the card in P8 at roughly
+a tenth of its clock ceiling. The fix was not to wait for a healthy machine but to stop comparing
+across machine states: run both builds under the identical constraint and report the ratio.
 
 **A measurement trap worth remembering:** an early profiling run reported 739 ms per frame instead of
 30 ms, because it shared the 4 GB GPU with the running API. On a small GPU, contention is not noise
@@ -434,8 +441,12 @@ A test that only checks a heading exists would pass against a completely broken 
 - Profiled and optimised the streaming path from **8.8 to 13.4 FPS** (server latency 101 ms -> 48 ms)
   by eliminating per-frame syscalls and moving downscaling ahead of inference.
 - Rebuilt the streaming transport to **binary framing** and split the pump into overlapping
-  producer/consumer tasks — then caught, in review, that the split had removed the loop's implicit
-  backpressure, and restored it without losing the overlap.
+  producer/consumer tasks for **+74% delivered throughput** (same-host A/B against the prior commit,
+  pipelining +64%, transport +6% and −24% bytes) — then caught, in review, that the split had
+  removed the loop's implicit backpressure, and restored it without losing the overlap.
+- Caught a **measurement artefact that mimicked a 2x regression**: a reduced GPU power limit during
+  battery charging. Found by keeping an unrelated control benchmark in the loop, and fixed by
+  A/B-ing both builds under the same constraint rather than across machine states.
 - Proved **4-hour stability** (PRD NFR-6): 114,256 frames, zero errors, GPU memory flat after a
   single step allocation, process RSS falling 1393 → 671 MiB under periodic collection.
 - Shipped with **152 automated tests and 6 browser E2E tests** asserting observable behaviour, plus

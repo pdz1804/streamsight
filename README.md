@@ -78,10 +78,12 @@ The MLflow promotion gate reads exactly these reports and transitioned `streamsi
 to Production on that basis. See [MLOPS](docs/MLOPS.md).
 
 The **browser viewer** runs slower than the pipeline figures above — annotation, JPEG encoding and
-WebSocket transport are on its critical path. It last measured **13.4 FPS** at **~12 ms**
-send-to-paint; both are shown live in the console. That figure predates the binary-transport and
-pipelined-pump rework and is awaiting re-measurement on a GPU that is not power-throttled — see
-[BENCHMARKS](docs/BENCHMARKS.md#a-third-change-not-yet-re-measured).
+WebSocket transport are on its critical path. Splitting the streaming pump into overlapping
+producer/consumer tasks and replacing base64 with binary framing measured **+74% delivered
+throughput** in a same-host A/B against the previous commit (**7.81 → 13.58 FPS**, and −24% bytes
+per frame), of which pipelining accounts for +64%. Absolute numbers there were taken while the
+laptop had halved its GPU power budget; the ratio is what the A/B establishes. See
+[BENCHMARKS](docs/BENCHMARKS.md#round-three-transport-and-pipelining).
 
 **Stability (PRD NFR-6): 4 hours continuous, passed.** 114,256 frames, 0 reconnects, 0 errors, never
 degraded. GPU memory took a single 52 MiB step and then held flat across 136 samples spanning 2.25

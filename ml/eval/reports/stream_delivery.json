@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-07-23 08:45 UTC",
+  "source": "sample",
+  "seconds_per_encoding": 60.0,
+  "results": [
+    {
+      "encoding": "base64",
+      "window_s": 59.94,
+      "frames": 769,
+      "delivered_fps": 12.83,
+      "bytes_per_frame": 155552,
+      "megabits_per_s": 15.96,
+      "server_reported_fps": 12.62,
+      "frames_including_warmup": 815,
+      "bytes_including_warmup": 126683633
+    },
+    {
+      "encoding": "binary",
+      "window_s": 60.02,
+      "frames": 815,
+      "delivered_fps": 13.58,
+      "bytes_per_frame": 117570,
+      "megabits_per_s": 12.77,
+      "server_reported_fps": 13.67,
+      "frames_including_warmup": 884,
+      "bytes_including_warmup": 103861864
+    }
+  ],
+  "transport_speedup": 1.058,
+  "bytes_ratio": 0.756
+}

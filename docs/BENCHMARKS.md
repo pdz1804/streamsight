@@ -94,25 +94,40 @@ Two changes were made off the back of that profile:
 Result: server latency **101 ms -> 48 ms**, viewer throughput **8.8 -> 13.4 FPS**, end-to-end
 send-to-paint latency **~12 ms**, comfortably inside the 100 ms target.
 
-### A third change, not yet re-measured
+### Round three: transport and pipelining
 
-The transport was then rebuilt again: base64 data URIs replaced by one binary message per frame
-(length-prefixed JSON header + raw JPEG), and the streaming pump split into a producer task
-(capture + inference + annotation) and a consumer task (encode + send) so the two overlap instead of
-running in series. See [ARCHITECTURE](ARCHITECTURE.md).
+Two further changes, made separately so each could be attributed:
 
-**The 13.4 FPS figure above predates that change and has not been superseded by a measurement.** The
-attempt to re-measure was invalid and is being repeated: the host's discrete GPU was stuck near its
-210 MHz floor against a 2100 MHz ceiling — cool at 52 °C, so power-starved rather than thermally
-throttled, with the battery at 14% on a charging adapter. In that state the *unchanged* pipeline
-benchmark read **8.07 FPS against its own 48.5 FPS baseline**, so every throughput number taken then
-describes the host, not the code.
+1. **Base64 left the hot path.** One binary message per frame — length-prefixed JSON header plus the
+   raw JPEG — decoded in the browser with `createImageBitmap`, off the main thread.
+2. **The pump stopped running in series.** `read → infer → encode → send` made the frame period the
+   *sum* of every stage; it is now a producer task and a consumer task over a depth-1 queue.
 
-Bytes on the wire were measured in the same session and are not clock-sensitive: the binary
-transport carries **0.76x the bytes per frame** of base64, matching the expected 1/1.33 overhead.
-Re-measure with `python ml/scripts/measure_stream_delivery.py` (delivery rate) and the Playwright
-`viewer paint rate` check (what a browser actually paints); confirm `nvidia-smi` shows the GPU
-boosting first.
+Measured as an A/B against the previous commit (`251d28d`) running side by side on the same host in
+the same session, one stream at a time, 60 s steady-state windows:
+
+| Build | Delivered FPS | KiB/frame |
+|---|---|---|
+| Serial pump, base64 (`251d28d`) | 7.81 | 151.6 |
+| Pipelined pump, base64 | **12.83** | 151.9 |
+| Pipelined pump, binary | **13.58** | 114.8 |
+
+**Pipelining is worth +64%; the binary transport a further +6% and −24% bytes; +74% combined.** The
+two base64 rows carry identical bytes per frame, which is the check that the legacy transport really
+is unchanged.
+
+> **These are ratios, not a hardware claim.** They were taken while the laptop had halved its GPU
+> power budget (`Current Power Limit 20 W` against a 35 W default, card parked in P8, ~450 MHz of a
+> 2100 MHz ceiling) because the battery was charging. The *unchanged* pipeline benchmark read
+> **13.17 FPS against its own 48.5 FPS baseline** in the same window, which is how the degradation
+> was detected. Absolute figures will be higher on a GPU at full power; the A/B is valid because
+> both builds were measured under the identical constraint, minutes apart.
+
+Browser paint rate on the pipelined build in that same window: **10.63 FPS**, measured by counting
+real `drawImage` calls rather than arriving messages. Reproduce with
+`python ml/scripts/measure_stream_delivery.py` and `npx playwright test -g "paints at a sustained
+rate"`; check `nvidia-smi -q -d POWER` first, since a reduced power limit silently invalidates any
+throughput number.
 
 ## Measurement caveats
 
