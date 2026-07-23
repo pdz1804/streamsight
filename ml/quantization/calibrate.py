@@ -31,7 +31,7 @@ import numpy as np
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.config import get_settings  # noqa: E402
+from app.core.config import get_settings  # noqa: E402
 
 DEFAULT_CALIBRATION_FRAMES = 128
 

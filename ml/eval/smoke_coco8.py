@@ -46,9 +46,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))  # eval_coco
 sys.path.insert(0, str(REPO_ROOT / "ml" / "data" / "scripts"))  # dataset_integrity, download_coco
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))  # app.*
 
-from app.backends import get_backend  # noqa: E402
-from app.config import get_settings  # noqa: E402
-from app.detector import Detector  # noqa: E402
+from app.core.config import get_settings  # noqa: E402
+from app.inference.backends import get_backend  # noqa: E402
+from app.inference.detector import Detector  # noqa: E402
 from dataset_integrity import (  # noqa: E402
     RAW_DIR,
     count_files,

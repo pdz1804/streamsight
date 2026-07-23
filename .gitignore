@@ -21,7 +21,7 @@ test-results/
 # ml/quantization/export_engines.py, and far too large for git.
 ml/models/weights/
 ml/models/engines/
-# Artifacts downloaded from the MLflow registry by app/registry.py. Derived
+# Artifacts downloaded from the MLflow registry by app/inference/registry.py. Derived
 # data with a registry as its source of truth, so committing it would be a
 # second, staler copy of something already versioned elsewhere.
 ml/models/_mlflow_cache/
@@ -45,6 +45,11 @@ mlruns/
 # --dry-run. These are execution records, not source.
 ml/train/outputs/
 ml/quantization/reports/
+# Uvicorn stdout/stderr captured when the service is started by hand for a
+# measurement run. These land beside the measurement artifacts but are process
+# noise, not results.
+ml/eval/reports/*.out
+ml/eval/reports/*.err
 
 # Environment and secrets
 .env

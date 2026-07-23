@@ -1,9 +1,9 @@
-﻿"""The detection + tracking engine.
+"""The detection + tracking engine.
 
 Wraps a single Ultralytics model instance. One ``Detector`` owns one loaded
 backend at one resolution; swapping either means constructing a new instance,
 which keeps the object immutable enough to reason about under concurrency (the
-hot-swap lock lives in :mod:`app.runtime`, not here).
+hot-swap lock lives in :mod:`app.inference.runtime`, not here).
 """
 
 from __future__ import annotations
@@ -16,10 +16,10 @@ from typing import Any
 
 import numpy as np
 
+from ..core.config import Settings
+from ..core.models import Detection, Track
+from ..vision.tracker import ensure_tracker_config, parse_results
 from .backends import Backend
-from .config import Settings
-from .models import Detection, Track
-from .tracker import ensure_tracker_config, parse_results
 
 logger = logging.getLogger(__name__)
 

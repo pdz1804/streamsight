@@ -20,8 +20,8 @@ the pump was split into producer/consumer tasks shows what the overlap bought.
 Attributing the whole difference to one change would be wrong.
 
 Usage:
-    python ml/scripts/measure_stream_delivery.py --seconds 60
-    python ml/scripts/measure_stream_delivery.py --encodings binary --seconds 30
+    python ml/eval/measure_stream_delivery.py --seconds 60
+    python ml/eval/measure_stream_delivery.py --encodings binary --seconds 30
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ REPORTS_DIR = REPO_ROOT / "ml" / "eval" / "reports"
 
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.wire import decode_stream_frame  # noqa: E402
+from app.streaming.wire import decode_stream_frame  # noqa: E402
 
 #: Frames in this opening window are discarded. The first seconds cover source
 #: open, model warmup and TCP ramp, none of which represent steady state.

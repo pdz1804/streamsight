@@ -1,6 +1,6 @@
 """WebSocket streaming session.
 
-Bridges a :class:`~app.capture.FrameSource` to a websocket client.
+Bridges a :class:`~app.streaming.capture.FrameSource` to a websocket client.
 
 The session runs as two cooperating tasks rather than one loop, because a single
 ``read -> infer -> encode -> send`` loop serializes stages that have no reason to
@@ -39,13 +39,13 @@ import cv2
 from fastapi import WebSocket
 from starlette.websockets import WebSocketDisconnect, WebSocketState
 
-from .annotate import draw_tracks
+from ..core.config import Settings
+from ..core.exceptions import SourceUnavailableError, StreamSightError
+from ..core.models import FrameTiming, StreamFrame, StreamStatus, Track
+from ..inference.runtime import InferenceRuntime
+from ..vision.annotate import draw_tracks
+from ..vision.preprocess import encode_jpeg, encode_jpeg_data_uri
 from .capture import FrameSource
-from .config import Settings
-from .exceptions import SourceUnavailableError, StreamSightError
-from .models import FrameTiming, StreamFrame, StreamStatus, Track
-from .preprocess import encode_jpeg, encode_jpeg_data_uri
-from .runtime import InferenceRuntime
 from .wire import encode_stream_frame_raw
 
 logger = logging.getLogger(__name__)

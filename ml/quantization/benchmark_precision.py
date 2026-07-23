@@ -56,8 +56,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.backends import BACKENDS  # noqa: E402
-from app.config import get_settings  # noqa: E402
+from app.core.config import get_settings  # noqa: E402
+from app.inference.backends import BACKENDS  # noqa: E402
 
 DEFAULT_CONFIG = REPO_ROOT / "ml" / "train" / "config.yaml"
 EVAL_REPORTS_DIR = REPO_ROOT / "ml" / "eval" / "reports"

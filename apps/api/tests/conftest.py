@@ -20,8 +20,8 @@ API_ROOT = Path(__file__).resolve().parents[1]
 if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
-from app.backends import candidate_chain  # noqa: E402
-from app.config import Settings, get_settings, probe_gpu  # noqa: E402
+from app.core.config import Settings, get_settings, probe_gpu  # noqa: E402
+from app.inference.backends import candidate_chain  # noqa: E402
 
 
 @pytest.fixture(scope="session")

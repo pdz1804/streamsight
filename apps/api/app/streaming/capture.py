@@ -21,8 +21,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .exceptions import SourceUnavailableError
-from .models import SourceKind
+from ..core.exceptions import SourceUnavailableError
+from ..core.models import SourceKind
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@
 
 Everything that mutates model state -- startup selection, hot-swap, and automatic
 degradation -- goes through here under one lock. Routes and the streaming loop
-never touch a :class:`~app.detector.Detector` directly, which is what makes a
+never touch a :class:`~app.inference.detector.Detector` directly, which is what makes a
 mid-stream precision switch safe.
 
 Degradation policy, applied on CUDA OOM:
@@ -26,12 +26,9 @@ import uuid
 
 import numpy as np
 
-from .backends import BACKENDS, Backend, availability, candidate_chain, get_backend
-from .config import GpuProbe, Settings, probe_gpu, resolve_start_imgsz
-from .detector import Detector, OutOfVramError, is_oom
-from .exceptions import BackendUnavailableError, NoBackendError
-from .metrics import MetricsCollector
-from .models import (
+from ..core.config import GpuProbe, Settings, probe_gpu, resolve_start_imgsz
+from ..core.exceptions import BackendUnavailableError, NoBackendError
+from ..core.models import (
     BackendInfo,
     Detection,
     FrameTiming,
@@ -39,8 +36,11 @@ from .models import (
     ModelConfigResponse,
     Track,
 )
+from ..telemetry.metrics import MetricsCollector
+from ..telemetry.store import DetectionStore
+from .backends import BACKENDS, Backend, availability, candidate_chain, get_backend
+from .detector import Detector, OutOfVramError, is_oom
 from .registry import last_resolution_source, resolved_backend
-from .store import DetectionStore
 
 logger = logging.getLogger(__name__)
 

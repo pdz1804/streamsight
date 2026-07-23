@@ -15,7 +15,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .exceptions import InvalidFrameError
+from ..core.exceptions import InvalidFrameError
 
 _DATA_URI_PREFIX = "data:"
 

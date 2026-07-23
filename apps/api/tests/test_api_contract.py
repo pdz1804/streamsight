@@ -18,17 +18,17 @@ import base64
 
 import cv2
 import pytest
-from app.backends import BACKENDS
-from app.config import GpuProbe, Settings
-from app.exceptions import BackendUnavailableError
-from app.models import (
+from app.core.config import GpuProbe, Settings
+from app.core.exceptions import BackendUnavailableError
+from app.core.models import (
     FrameResponse,
     FrameTiming,
     GpuInfo,
     MetricsResponse,
     ModelConfigRequest,
 )
-from app.runtime import InferenceRuntime
+from app.inference.backends import BACKENDS
+from app.inference.runtime import InferenceRuntime
 from pydantic import ValidationError
 
 

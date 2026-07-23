@@ -9,10 +9,10 @@ from __future__ import annotations
 import io
 
 import pytest
-from app.config import Settings
-from app.exceptions import InvalidFrameError, SourceUnavailableError
-from app.models import SourceInfo
-from app.sources import SAMPLE_ID, WEBCAM_ID, SourceRegistry
+from app.core.config import Settings
+from app.core.exceptions import InvalidFrameError, SourceUnavailableError
+from app.core.models import SourceInfo
+from app.streaming.sources import SAMPLE_ID, WEBCAM_ID, SourceRegistry
 
 
 @pytest.fixture
@@ -62,6 +62,38 @@ def test_resolved_upload_stays_inside_the_uploads_directory(registry: SourceRegi
     resolved = registry.resolve(created.id)
     uploads = (registry._settings.data_dir / "uploads").resolve()
     assert str(resolved).startswith(str(uploads))
+
+
+def test_an_all_digit_upload_id_resolves_to_its_file_not_a_camera_index(
+    registry: SourceRegistry,
+) -> None:
+    """Ids are `uuid4().hex[:12]`, and hex is 0-9a-f, so ~1 in 275 is all digits.
+
+    Those ids used to fall through the bare-digit camera-index branch and come
+    back as an OpenCV device number, so the upload silently would not play. The
+    id below is a real one produced by that generator; pinning it keeps the case
+    deterministic instead of leaving it to a 0.4 % chance per run.
+    """
+    numeric_id = "281213764127"
+    (registry._uploads_dir / f"{numeric_id}.mp4").write_bytes(b"x" * 2048)
+
+    resolved = registry.resolve(numeric_id)
+
+    assert resolved != numeric_id, "resolved to a camera index instead of the upload"
+    assert resolved.endswith(f"{numeric_id}.mp4")
+
+
+def test_a_bare_device_index_still_resolves_as_a_camera(registry: SourceRegistry) -> None:
+    """The upload lookup must not swallow genuine camera indices."""
+    assert registry.resolve("0") == "0"
+    assert registry.resolve("2") == "2"
+
+
+def test_an_unknown_digit_id_is_not_mistaken_for_a_stored_upload(
+    registry: SourceRegistry,
+) -> None:
+    """Nothing on disk, so a 12-digit spec is still just a device index."""
+    assert registry.resolve("999999999999") == "999999999999"
 
 
 # ------------------------------------------------------------------ url schemes

@@ -1,4 +1,4 @@
-﻿"""Long-running stability soak against the live API (NFR-6).
+"""Long-running stability soak against the live API (NFR-6).
 
 Drives the real WebSocket stream rather than a standalone inference loop, because
 the things that leak are the things a loop does not exercise: the capture ring
@@ -10,8 +10,8 @@ RSS between the first steady-state sample and the last. A short warmup window is
 excluded so one-off allocations are not counted as a leak.
 
 Usage:
-    python ml/scripts/soak_stream.py --duration 14400
-    python ml/scripts/soak_stream.py --duration 600 --interval 30
+    python ml/eval/soak_stream.py --duration 14400
+    python ml/eval/soak_stream.py --duration 600 --interval 30
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ REPORTS_DIR = REPO_ROOT / "ml" / "eval" / "reports"
 
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.wire import decode_stream_frame  # noqa: E402
+from app.streaming.wire import decode_stream_frame  # noqa: E402
 
 #: Samples inside this window after start are excluded from drift analysis.
 WARMUP_S = 120.0

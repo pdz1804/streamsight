@@ -19,7 +19,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from .models import Track
+from ..core.models import Track
 
 logger = logging.getLogger(__name__)
 

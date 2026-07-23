@@ -4,7 +4,7 @@
 
 ```powershell
 # One configuration
-python ml/scripts/benchmark_inference.py --engine fp32_gpu --imgsz 640 --frames 300
+python ml/eval/benchmark_inference.py --engine fp32_gpu --imgsz 640 --frames 300
 
 # Full sweep, agreement scoring, Pareto front, plot
 python ml/eval/benchmark_frontier.py --frames 200 --imgsz 640 480 320
@@ -125,7 +125,7 @@ is unchanged.
 
 Browser paint rate on the pipelined build in that same window: **10.63 FPS**, measured by counting
 real `drawImage` calls rather than arriving messages. Reproduce with
-`python ml/scripts/measure_stream_delivery.py` and `npx playwright test -g "paints at a sustained
+`python ml/eval/measure_stream_delivery.py` and `npx playwright test -g "paints at a sustained
 rate"`; check `nvidia-smi -q -d POWER` first, since a reduced power limit silently invalidates any
 throughput number.
 

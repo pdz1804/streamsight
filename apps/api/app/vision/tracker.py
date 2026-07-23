@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from .models import Detection, Track
+from ..core.models import Detection, Track
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,8 @@ def ensure_tracker_config(path: Path) -> Path:
     if path.exists():
         return path
     path.parent.mkdir(parents=True, exist_ok=True)
-    lines = ["# Generated from apps/api/app/tracker.py:BYTETRACK_CONFIG - do not edit by hand."]
+    header = "# Generated from app/vision/tracker.py:BYTETRACK_CONFIG - do not edit by hand."
+    lines = [header]
     for key, value in BYTETRACK_CONFIG.items():
         rendered = str(value).lower() if isinstance(value, bool) else value
         lines.append(f"{key}: {rendered}")

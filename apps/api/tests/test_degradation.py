@@ -16,11 +16,11 @@ from __future__ import annotations
 from typing import ClassVar
 
 import pytest
-from app.backends import BACKENDS
-from app.config import Settings
-from app.detector import OutOfVramError
-from app.exceptions import NoBackendError
-from app.runtime import InferenceRuntime
+from app.core.config import Settings
+from app.core.exceptions import NoBackendError
+from app.inference.backends import BACKENDS
+from app.inference.detector import OutOfVramError
+from app.inference.runtime import InferenceRuntime
 
 
 class FakeDetector:
@@ -85,10 +85,10 @@ def runtime(tmp_path, monkeypatch) -> InferenceRuntime:
         elif not path.exists():
             path.write_bytes(b"stub artifact")
 
-    monkeypatch.setattr("app.runtime.Detector", FakeDetector)
+    monkeypatch.setattr("app.inference.runtime.Detector", FakeDetector)
     instance = InferenceRuntime(settings)
     # Force the CPU-only ladder so the test does not depend on the host GPU.
-    monkeypatch.setattr("app.runtime.probe_gpu", lambda: instance._gpu)
+    monkeypatch.setattr("app.inference.runtime.probe_gpu", lambda: instance._gpu)
     instance.startup()
     return instance
 
@@ -178,7 +178,7 @@ def test_transient_oom_does_not_permanently_blacklist_a_backend(
 
 def test_startup_fails_loudly_when_nothing_can_run(tmp_path, monkeypatch) -> None:
     """An empty model tree is a startup error, not a silent half-working service."""
-    monkeypatch.setattr("app.runtime.Detector", FakeDetector)
+    monkeypatch.setattr("app.inference.runtime.Detector", FakeDetector)
     settings = Settings(models_dir=tmp_path / "empty", data_dir=tmp_path / "d")
     with pytest.raises(NoBackendError):
         InferenceRuntime(settings).startup()

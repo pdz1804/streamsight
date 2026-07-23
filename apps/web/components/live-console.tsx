@@ -13,11 +13,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { api, ApiError } from "@/lib/api";
 import type { SourceInfo } from "@/lib/types";
-import { useStream } from "@/lib/use-stream";
+import { useStream } from "@/hooks/use-stream";
 
-import { Sparkline } from "./sparkline";
 import { TrackLegend } from "./track-legend";
-import { Button, Chip, ErrorNote, Panel, Stat } from "./ui";
+import { Button, Chip, ErrorNote, Panel, Sparkline, Stat } from "./ui";
 import { VideoStage } from "./video-stage";
 
 const FPS_TARGET = 30;

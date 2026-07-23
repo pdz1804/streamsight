@@ -10,10 +10,10 @@ from fastapi import APIRouter, File, Query, UploadFile, WebSocket
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
+from ..core.models import FrameResponse
 from ..dependencies import RegistryWsDep, RuntimeDep, RuntimeWsDep, SettingsDep
-from ..models import FrameResponse
-from ..preprocess import decode_base64_frame, decode_image_bytes
-from ..streaming import StreamSession
+from ..streaming.session import StreamSession
+from ..vision.preprocess import decode_base64_frame, decode_image_bytes
 
 logger = logging.getLogger(__name__)
 

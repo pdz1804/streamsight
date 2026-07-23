@@ -83,7 +83,7 @@ Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
 
 ### The API can load what the registry promoted — if you ask it to
 
-`apps/api/app/registry.py` resolves a backend's artifact from the registry instead of from its fixed
+`apps/api/app/inference/registry.py` resolves a backend's artifact from the registry instead of from its fixed
 path. It is **off unless configured**:
 
 ```powershell
@@ -113,10 +113,10 @@ request-path startup to a reachable MLflow server is the wrong trade for a singl
 Verified end to end against the DB-backed server and the real promoted v1:
 
 ```
-app.registry: backend int8_onnx_cpu resolved from mlflow registry:
+app.inference.registry: backend int8_onnx_cpu resolved from mlflow registry:
   ml\models\_mlflow_cache\streamsight-detector\1\int8_onnx_cpu\model\yolo11n_int8.onnx
-app.detector: loaded backend=int8_onnx_cpu artifact=yolo11n_int8.onnx device=cpu
-app.registry: streamsight-detector v1 was logged for backend int8_onnx_cpu, not fp32_gpu;
+app.inference.detector: loaded backend=int8_onnx_cpu artifact=yolo11n_int8.onnx device=cpu
+app.inference.registry: streamsight-detector v1 was logged for backend int8_onnx_cpu, not fp32_gpu;
   format mismatch, ignoring
 ```
 
@@ -284,7 +284,7 @@ class-index -> COCO-category-id mapping, pycocotools scoring), driven end to end
 the `fp32_cpu` backend, which is hardcoded and never touches a GPU.
 
 COCO8 ships YOLO-format `.txt` labels rather than a COCO JSON, so the smoke test converts the 4-image
-val split itself (`yolo_label_to_coco_bbox`, unit-tested in `ml/eval/test_smoke_coco8.py`) and then
+val split itself (`yolo_label_to_coco_bbox`, unit-tested in `ml/tests/test_smoke_coco8.py`) and then
 calls the *same* `build_category_map`, `detach_tracker`, `predict_dataset`, and `evaluate` functions
 `eval_coco.py` uses in production — the point is to exercise the real conversions, not a parallel copy
 of them.

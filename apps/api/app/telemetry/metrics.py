@@ -15,8 +15,8 @@ from statistics import fmean
 
 import psutil
 
-from .config import GpuProbe, Settings, probe_gpu
-from .models import GpuInfo, MetricsResponse
+from ..core.config import GpuProbe, Settings, probe_gpu
+from ..core.models import GpuInfo, MetricsResponse
 
 #: Number of recent frames used for the rolling FPS/latency figures.
 WINDOW = 120

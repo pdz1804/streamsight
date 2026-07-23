@@ -18,8 +18,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
 
-# Repo root: apps/api/app/config.py -> apps/api/app -> apps/api -> apps -> <root>
-REPO_ROOT = Path(__file__).resolve().parents[3]
+# Repo root, by parent depth from this file:
+#   apps/api/app/core/config.py -> core -> app -> apps/api -> apps -> <root>
+#
+# The depth is load-bearing -- weights, the demo clip, the SQLite log and .env
+# are all resolved from it, and moving this module changes the count silently.
+# tests/test_repo_layout.py asserts the result still looks like the repo root so
+# that a move fails a test rather than a deployment.
+REPO_ROOT = Path(__file__).resolve().parents[4]
 
 
 class Settings(BaseSettings):
@@ -79,7 +85,7 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 32 * 1024 * 1024
 
     # --- mlflow registry (optional, FR-16's closing clause) -----------------
-    # Empty by default: this is the single switch `app.registry` checks before
+    # Empty by default: this is the single switch `app.inference.registry` checks before
     # doing anything mlflow-related, so an unconfigured (or CI) process never
     # imports mlflow and never makes a network call.
     mlflow_tracking_uri: str = ""

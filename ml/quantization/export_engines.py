@@ -34,8 +34,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # sibling: calibrate.py
 
-from app.backends import BACKENDS  # noqa: E402
-from app.config import get_settings  # noqa: E402
+from app.core.config import get_settings  # noqa: E402
+from app.inference.backends import BACKENDS  # noqa: E402
 
 #: format key -> Ultralytics export kwargs. `imgsz` and `data` are filled in later.
 #:

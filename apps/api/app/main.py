@@ -21,11 +21,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from . import __version__
-from .config import get_settings
-from .exceptions import StreamSightError
+from .core.config import get_settings
+from .core.exceptions import StreamSightError
+from .inference.runtime import InferenceRuntime
 from .routers import detect, system
-from .runtime import InferenceRuntime
-from .sources import SourceRegistry
+from .streaming.sources import SourceRegistry
 
 logger = logging.getLogger(__name__)
 

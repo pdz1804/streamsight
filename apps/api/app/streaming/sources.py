@@ -21,9 +21,9 @@ import re
 import uuid
 from pathlib import Path
 
-from .config import Settings
-from .exceptions import InvalidFrameError, SourceUnavailableError
-from .models import SourceInfo
+from ..core.config import Settings
+from ..core.exceptions import InvalidFrameError, SourceUnavailableError
+from ..core.models import SourceInfo
 
 logger = logging.getLogger(__name__)
 
@@ -109,27 +109,45 @@ class SourceRegistry:
             return str(self._sample_path)
         if spec == WEBCAM_ID:
             return "0"
-        if spec.isdigit():
-            return spec
         if "://" in spec:
             return self._resolve_url(spec)
 
-        # Upload ids are server-generated hex. Validating the shape here is what
-        # actually stops traversal: `Path.glob` happily expands `..`, so an id of
-        # `../../assets/*` would otherwise escape the uploads directory and stream
-        # back any video on the host.
-        if not _UPLOAD_ID_PATTERN.fullmatch(spec):
-            raise SourceUnavailableError(f"unknown source '{source}'")
+        # A stored upload wins over every other reading of the same string.
+        #
+        # Upload ids are `uuid4().hex[:12]`, and hex digits are 0-9a-f, so roughly
+        # one id in 275 comes out all-numeric. When the bare-digit camera-index
+        # branch below was checked first, such an upload resolved to an OpenCV
+        # device index instead of its own file and simply refused to play -- a
+        # defect that surfaced once in maybe three hundred uploads and looked like
+        # a corrupt file rather than a bug. Existence is unambiguous where shape
+        # is not, so the lookup happens first.
+        if _UPLOAD_ID_PATTERN.fullmatch(spec):
+            upload = self._resolve_upload(spec)
+            if upload is not None:
+                return upload
 
-        matches = [p for p in self._uploads_dir.glob(f"{spec}.*") if _is_video(p)]
-        if matches:
-            resolved = matches[0].resolve()
-            # Belt and braces: even with a validated id, confirm the result is
-            # inside the uploads directory before handing it to OpenCV.
-            if not resolved.is_relative_to(self._uploads_dir.resolve()):
-                raise SourceUnavailableError(f"unknown source '{source}'")
-            return str(resolved)
+        if spec.isdigit():
+            return spec
+
         raise SourceUnavailableError(f"unknown source '{source}'")
+
+    def _resolve_upload(self, spec: str) -> str | None:
+        """Path of the stored upload named `spec`, or None if there is no such file.
+
+        The caller has already checked `spec` against the id pattern, which is what
+        actually stops traversal: `Path.glob` happily expands `..`, so an id of
+        `../../assets/*` would otherwise escape the uploads directory and stream
+        back any video on the host.
+        """
+        matches = [p for p in self._uploads_dir.glob(f"{spec}.*") if _is_video(p)]
+        if not matches:
+            return None
+        resolved = matches[0].resolve()
+        # Belt and braces: even with a validated id, confirm the result is inside
+        # the uploads directory before handing it to OpenCV.
+        if not resolved.is_relative_to(self._uploads_dir.resolve()):
+            return None
+        return str(resolved)
 
     def _resolve_url(self, spec: str) -> str:
         """Allow only real network stream schemes.

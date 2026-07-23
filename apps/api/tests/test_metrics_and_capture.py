@@ -6,10 +6,10 @@ import time
 
 import numpy as np
 import pytest
-from app.capture import FrameSource, classify_source
-from app.config import Settings
-from app.exceptions import SourceUnavailableError
-from app.metrics import UNIQUE_TRACK_CAP, WINDOW, MetricsCollector
+from app.core.config import Settings
+from app.core.exceptions import SourceUnavailableError
+from app.streaming.capture import FrameSource, classify_source
+from app.telemetry.metrics import UNIQUE_TRACK_CAP, WINDOW, MetricsCollector
 
 # --------------------------------------------------------------------- metrics
 
