@@ -45,6 +45,11 @@ mlruns/
 # --dry-run. These are execution records, not source.
 ml/train/outputs/
 ml/quantization/reports/
+# Uvicorn stdout/stderr captured when the service is started by hand for a
+# measurement run. These land beside the measurement artifacts but are process
+# noise, not results.
+ml/eval/reports/*.out
+ml/eval/reports/*.err
 
 # Environment and secrets
 .env
