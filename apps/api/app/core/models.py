@@ -1,7 +1,7 @@
 """Pydantic schemas shared by every API surface.
 
 These types are the public contract of the service: the Next.js client mirrors
-them in ``apps/web/lib/types.ts``, and the benchmark harness in ``ml/scripts``
+them in ``apps/web/lib/types.ts``, and the measurement harnesses in ``ml/eval``
 consumes the same field names. Change them deliberately.
 """
 
@@ -103,7 +103,7 @@ class StreamFrame(BaseModel):
     Two transports carry this model, and ``image`` is what distinguishes them.
 
     * **binary** (default): the pixels travel as raw JPEG bytes appended after
-      this object in one length-prefixed message (see :mod:`app.wire`), so
+      this object in one length-prefixed message (see :mod:`app.streaming.wire`), so
       ``image`` is ``None``.
     * **base64**: ``image`` holds a ``data:image/jpeg;base64,...`` URI and the
       whole thing ships as one JSON text frame.
@@ -216,7 +216,7 @@ class ModelConfigRequest(BaseModel):
     ``precision`` accepts both concrete backend keys (``fp32_gpu``) and the
     spec's abstract words (``int8``/``fp16``/``fp32``); the abstract form is
     resolved against what this host can actually run, in
-    :mod:`app.runtime`.
+    :mod:`app.inference.runtime`.
     """
 
     model_config = ConfigDict(extra="forbid")

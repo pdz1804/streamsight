@@ -40,6 +40,19 @@ def test_repo_root_is_the_ancestor_config_actually_lives_under():
 
 
 def test_default_asset_paths_land_inside_the_repo():
-    settings = Settings()
-    for path in (settings.models_dir, settings.data_dir, settings.assets_dir):
-        assert REPO_ROOT in path.parents, f"{path} escapes the repo root"
+    """Reads the declared defaults, not a constructed `Settings()`.
+
+    `Settings()` merges `.env` and the `STREAMSIGHT_MODELS_DIR` /`_DATA_DIR` /
+    `_ASSETS_DIR` overrides, which are documented and are exactly how a
+    side-by-side A/B run points a second checkout at this one's weights. Asserting
+    on an instance would turn that supported configuration into a red layout
+    guard, blaming the directory structure for something the operator chose. The
+    field defaults are what REPO_ROOT actually feeds, so they are what this checks.
+    """
+    defaults = {
+        name: Settings.model_fields[name].default
+        for name in ("models_dir", "data_dir", "assets_dir")
+    }
+    for name, path in defaults.items():
+        assert isinstance(path, Path), f"{name} default is {path!r}, not a Path"
+        assert REPO_ROOT in path.parents, f"default {name} ({path}) escapes the repo root"

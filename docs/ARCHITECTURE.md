@@ -127,9 +127,15 @@ not. Only frame summaries and track lifecycles are stored, never one row per box
 
 ## Layout
 
-Packages are ordered below by what they may import. `core` depends on nothing in the
-app; `routers` may depend on anything. Nothing points back up the list, so the arrow
-of dependency is readable from the import lines alone.
+Packages are ordered below by what they may import: each may import from those above
+it and from none below. `core` depends on nothing in the app; `routers` may depend on
+anything. The arrow of dependency is therefore readable from the import lines alone.
+
+`vision` sits above `inference` because the detector parses ByteTrack results, so
+`inference/detector.py` imports `vision/tracker.py` and not the reverse.
+
+`apps/api/tests/test_package_layering.py` enforces this by parsing the imports. The
+order below is not a description that can drift out of date; breaking it fails a test.
 
 ```
 apps/api/app/
@@ -145,16 +151,16 @@ apps/api/app/
     metrics.py       rolling latency/throughput window
     store.py         async SQLite writer
 
+  vision/            per-frame work, independent of the frame's origin
+    preprocess.py    decode / encode
+    tracker.py       ByteTrack config, Results -> schemas
+    annotate.py      overlay drawing
+
   inference/         the only package that touches model state
     backends.py      the registry and the fallback ladder
     detector.py      Ultralytics wrapper
     registry.py      optional MLflow artifact resolution
     runtime.py       model ownership, hot-swap, degradation
-
-  vision/            per-frame work, independent of the frame's origin
-    preprocess.py    decode / encode
-    tracker.py       ByteTrack config, Results -> schemas
-    annotate.py      overlay drawing
 
   streaming/
     capture.py       threaded source + ring buffer

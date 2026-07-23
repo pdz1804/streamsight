@@ -85,7 +85,7 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 32 * 1024 * 1024
 
     # --- mlflow registry (optional, FR-16's closing clause) -----------------
-    # Empty by default: this is the single switch `app.registry` checks before
+    # Empty by default: this is the single switch `app.inference.registry` checks before
     # doing anything mlflow-related, so an unconfigured (or CI) process never
     # imports mlflow and never makes a network call.
     mlflow_tracking_uri: str = ""

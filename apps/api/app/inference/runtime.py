@@ -2,7 +2,7 @@
 
 Everything that mutates model state -- startup selection, hot-swap, and automatic
 degradation -- goes through here under one lock. Routes and the streaming loop
-never touch a :class:`~app.detector.Detector` directly, which is what makes a
+never touch a :class:`~app.inference.detector.Detector` directly, which is what makes a
 mid-stream precision switch safe.
 
 Degradation policy, applied on CUDA OOM:

@@ -1,6 +1,6 @@
 """WebSocket streaming session.
 
-Bridges a :class:`~app.capture.FrameSource` to a websocket client.
+Bridges a :class:`~app.streaming.capture.FrameSource` to a websocket client.
 
 The session runs as two cooperating tasks rather than one loop, because a single
 ``read -> infer -> encode -> send`` loop serializes stages that have no reason to

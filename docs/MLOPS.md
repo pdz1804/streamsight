@@ -113,10 +113,10 @@ request-path startup to a reachable MLflow server is the wrong trade for a singl
 Verified end to end against the DB-backed server and the real promoted v1:
 
 ```
-app.registry: backend int8_onnx_cpu resolved from mlflow registry:
+app.inference.registry: backend int8_onnx_cpu resolved from mlflow registry:
   ml\models\_mlflow_cache\streamsight-detector\1\int8_onnx_cpu\model\yolo11n_int8.onnx
-app.detector: loaded backend=int8_onnx_cpu artifact=yolo11n_int8.onnx device=cpu
-app.registry: streamsight-detector v1 was logged for backend int8_onnx_cpu, not fp32_gpu;
+app.inference.detector: loaded backend=int8_onnx_cpu artifact=yolo11n_int8.onnx device=cpu
+app.inference.registry: streamsight-detector v1 was logged for backend int8_onnx_cpu, not fp32_gpu;
   format mismatch, ignoring
 ```
 

@@ -1,6 +1,6 @@
 """Optional MLflow-backed artifact resolution (PRD FR-16's closing clause).
 
-``Backend.path(settings)`` (`app.backends`) is the declarative table's only way
+``Backend.path(settings)`` (`app.inference.backends`) is the declarative table's only way
 to turn an entry into a location, and it must keep meaning exactly that: the
 promotion gate (``ml/quantization/benchmark_precision.py``) calls it to find
 the *local* export it is about to upload, so redefining it to consult the
