@@ -8,9 +8,12 @@ on this machine, not merely that the routes are wired up.
 from __future__ import annotations
 
 import base64
+import json
 
 import cv2
+import numpy as np
 import pytest
+from app.streaming.wire import decode_stream_frame
 
 pytestmark = pytest.mark.slow
 
@@ -19,6 +22,29 @@ def _b64_jpeg(frame) -> str:
     ok, buffer = cv2.imencode(".jpg", frame)
     assert ok
     return base64.b64encode(buffer.tobytes()).decode()
+
+
+def _collect_frames(socket, count, *, binary) -> list[tuple[dict, bytes | None]]:
+    """Read until `count` frame messages arrive, failing fast if the stream dies.
+
+    Status messages are text JSON in both encodings; only frames differ, so the
+    branch is on the transport of the payload rather than on the message kind.
+    """
+    frames = []
+    while len(frames) < count:
+        message = socket.receive()
+        if message.get("bytes") is not None:
+            header, jpeg = decode_stream_frame(message["bytes"])
+            assert binary, "binary frame arrived on a base64 stream"
+            frames.append((header, jpeg))
+            continue
+        payload = json.loads(message["text"])
+        if payload["kind"] == "frame":
+            assert not binary, "text frame arrived on a binary stream"
+            frames.append((payload, None))
+        elif payload["phase"] in {"error", "ended"}:
+            pytest.fail(f"stream ended early: {payload['message']}")
+    return frames
 
 
 # ------------------------------------------------------------------- health
@@ -189,20 +215,35 @@ def test_stream_reports_an_unknown_source_instead_of_hanging(client) -> None:
 
 
 def test_stream_delivers_annotated_frames(client) -> None:
-    """End-to-end proof: open the socket, receive real frames with real overlays."""
-    frames = []
+    """End-to-end proof over the default transport: real frames, real overlays.
+
+    Binary is what the browser negotiates, so it is what this asserts. The header
+    carries no ``image`` key at all -- the pixels are the second half of the same
+    message -- which is exactly the difference an earlier version of this test
+    missed by calling ``receive_json``.
+    """
     with client.websocket_connect("/detect/stream?source=sample&loop=true") as socket:
-        while len(frames) < 3:
-            message = socket.receive_json()
-            if message["kind"] == "frame":
-                frames.append(message)
-            elif message["phase"] in {"error", "ended"}:
-                pytest.fail(f"stream ended early: {message['message']}")
+        frames = _collect_frames(socket, 3, binary=True)
 
-    for frame in frames:
-        assert frame["image"].startswith("data:image/jpeg;base64,")
-        assert frame["width"] > 0 and frame["height"] > 0
-        assert frame["timing"]["inference_ms"] > 0
-        assert frame["server_ts"] > 0
+    for header, jpeg in frames:
+        assert "image" not in header
+        assert jpeg.startswith(b"\xff\xd8"), "payload is not a JPEG"
+        decoded = cv2.imdecode(np.frombuffer(jpeg, dtype=np.uint8), cv2.IMREAD_COLOR)
+        assert decoded is not None and decoded.size > 0
+        assert header["width"] > 0 and header["height"] > 0
+        assert header["timing"]["inference_ms"] > 0
+        assert header["server_ts"] > 0
 
-    assert [f["frame_id"] for f in frames] == sorted(f["frame_id"] for f in frames)
+    ids = [h["frame_id"] for h, _ in frames]
+    assert ids == sorted(ids)
+
+
+def test_stream_base64_encoding_still_carries_a_data_uri(client) -> None:
+    """The legacy transport stays available for non-browser consumers."""
+    url = "/detect/stream?source=sample&loop=true&encoding=base64"
+    with client.websocket_connect(url) as socket:
+        frames = _collect_frames(socket, 2, binary=False)
+
+    for payload, _ in frames:
+        assert payload["image"].startswith("data:image/jpeg;base64,")
+        assert payload["width"] > 0 and payload["height"] > 0

@@ -3,8 +3,14 @@
 from __future__ import annotations
 
 import pytest
-from app.backends import BACKENDS, FALLBACK_LADDER, availability, candidate_chain, get_backend
-from app.config import Settings
+from app.core.config import Settings
+from app.inference.backends import (
+    BACKENDS,
+    FALLBACK_LADDER,
+    availability,
+    candidate_chain,
+    get_backend,
+)
 
 
 @pytest.fixture

@@ -18,8 +18,7 @@ import { useEffect, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import type { MetricsResponse } from "@/lib/types";
 
-import { Sparkline } from "./sparkline";
-import { Chip, ErrorNote, KpiTile, Panel, Skeleton, Stat } from "./ui";
+import { Chip, ErrorNote, KpiTile, Panel, Skeleton, Sparkline, Stat } from "./ui";
 
 const POLL_MS = 1000;
 const HISTORY = 90;

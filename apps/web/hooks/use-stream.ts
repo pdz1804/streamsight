@@ -24,8 +24,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { streamUrl } from "./api";
-import type { StreamFrame, StreamMessage, StreamPhase, Track } from "./types";
+import { streamUrl } from "@/lib/api";
+import type { StreamFrame, StreamMessage, StreamPhase, Track } from "@/lib/types";
 
 const TELEMETRY_INTERVAL_MS = 250;
 

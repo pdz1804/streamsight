@@ -16,10 +16,10 @@ from typing import Any
 
 import numpy as np
 
+from ..core.config import Settings
+from ..core.models import Detection, Track
+from ..vision.tracker import ensure_tracker_config, parse_results
 from .backends import Backend
-from .config import Settings
-from .models import Detection, Track
-from .tracker import ensure_tracker_config, parse_results
 
 logger = logging.getLogger(__name__)
 

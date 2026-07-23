@@ -26,9 +26,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
 import cv2  # noqa: E402
-from app.backends import BACKENDS, availability, get_backend  # noqa: E402
-from app.config import get_settings, probe_gpu  # noqa: E402
-from app.detector import Detector  # noqa: E402
+from app.core.config import get_settings, probe_gpu  # noqa: E402
+from app.inference.backends import BACKENDS, availability, get_backend  # noqa: E402
+from app.inference.detector import Detector  # noqa: E402
 
 #: Frames discarded before timing starts. The first inferences pay one-off
 #: allocation and kernel-selection costs that would skew a short run.

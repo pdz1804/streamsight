@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from app.tracker import BYTETRACK_CONFIG, ensure_tracker_config, parse_results
+from app.vision.tracker import BYTETRACK_CONFIG, ensure_tracker_config, parse_results
 from fakes import FakeBoxes, FakeResults
 
 

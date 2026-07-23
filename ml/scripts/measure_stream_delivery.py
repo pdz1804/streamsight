@@ -41,7 +41,7 @@ REPORTS_DIR = REPO_ROOT / "ml" / "eval" / "reports"
 
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.wire import decode_stream_frame  # noqa: E402
+from app.streaming.wire import decode_stream_frame  # noqa: E402
 
 #: Frames in this opening window are discarded. The first seconds cover source
 #: open, model warmup and TCP ramp, none of which represent steady state.

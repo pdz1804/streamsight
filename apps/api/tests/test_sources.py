@@ -9,10 +9,10 @@ from __future__ import annotations
 import io
 
 import pytest
-from app.config import Settings
-from app.exceptions import InvalidFrameError, SourceUnavailableError
-from app.models import SourceInfo
-from app.sources import SAMPLE_ID, WEBCAM_ID, SourceRegistry
+from app.core.config import Settings
+from app.core.exceptions import InvalidFrameError, SourceUnavailableError
+from app.core.models import SourceInfo
+from app.streaming.sources import SAMPLE_ID, WEBCAM_ID, SourceRegistry
 
 
 @pytest.fixture

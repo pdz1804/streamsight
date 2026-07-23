@@ -16,9 +16,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import pytest
-from app.backends import BACKENDS
-from app.config import Settings
-from app.registry import (
+from app.core.config import Settings
+from app.inference.backends import BACKENDS
+from app.inference.registry import (
     last_resolution_source,
     reset_registry_state,
     resolve_artifact,
@@ -173,7 +173,7 @@ def test_registry_unreachable_falls_back_to_path_and_warns(
     )
     backend = BACKENDS["int8_onnx_cpu"]
 
-    with caplog.at_level(logging.WARNING, logger="app.registry"):
+    with caplog.at_level(logging.WARNING, logger="app.inference.registry"):
         result = resolve_artifact(backend, settings)
 
     assert result == backend.path(settings)

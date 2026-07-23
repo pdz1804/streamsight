@@ -20,8 +20,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { HealthResponse } from "@/lib/types";
 
-import { ThemeToggle } from "./theme-toggle";
-import { Chip } from "./ui";
+import { Chip, ThemeToggle } from "./ui";
 
 const NAV = [
   { href: "/", label: "Live", icon: Broadcast },

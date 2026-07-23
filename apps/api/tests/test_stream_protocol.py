@@ -14,10 +14,10 @@ import json
 import struct
 
 import pytest
-from app.config import Settings
-from app.models import FrameTiming
-from app.streaming import StreamSession, _EndOfStream, _Rendered
-from app.wire import (
+from app.core.config import Settings
+from app.core.models import FrameTiming
+from app.streaming.session import StreamSession, _EndOfStream, _Rendered
+from app.streaming.wire import (
     MAX_HEADER_BYTES,
     WireFormatError,
     decode_stream_frame,

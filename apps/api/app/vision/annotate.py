@@ -14,7 +14,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
-from .models import Track
+from ..core.models import Track
 
 #: Perceptually distinct hues, BGR. Chosen to stay readable on both bright and
 #: dark footage and to remain distinguishable for viewers with common CVD.

@@ -17,10 +17,10 @@ import asyncio
 
 import numpy as np
 import pytest
-from app.config import Settings
-from app.models import FrameTiming
-from app.streaming import StreamSession
-from app.wire import decode_stream_frame
+from app.core.config import Settings
+from app.core.models import FrameTiming
+from app.streaming.session import StreamSession
+from app.streaming.wire import decode_stream_frame
 from starlette.websockets import WebSocketDisconnect, WebSocketState
 
 FRAME = np.zeros((16, 24, 3), dtype=np.uint8)
@@ -122,7 +122,7 @@ def patched_source(monkeypatch: pytest.MonkeyPatch) -> type[FakeSource]:
         created.append(source)
         return source
 
-    monkeypatch.setattr("app.streaming.FrameSource", factory)
+    monkeypatch.setattr("app.streaming.session.FrameSource", factory)
     FakeSource.instances = created  # type: ignore[attr-defined]
     return FakeSource
 

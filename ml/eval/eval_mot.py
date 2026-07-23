@@ -44,10 +44,10 @@ import numpy as np
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.backends import BACKENDS, availability, get_backend  # noqa: E402
-from app.config import get_settings, probe_gpu  # noqa: E402
-from app.detector import Detector  # noqa: E402
-from app.tracker import BYTETRACK_CONFIG  # noqa: E402
+from app.core.config import get_settings, probe_gpu  # noqa: E402
+from app.inference.backends import BACKENDS, availability, get_backend  # noqa: E402
+from app.inference.detector import Detector  # noqa: E402
+from app.vision.tracker import BYTETRACK_CONFIG  # noqa: E402
 
 REPORTS_DIR = REPO_ROOT / "ml" / "eval" / "reports"
 DEFAULT_MOT_ROOT = REPO_ROOT / "ml" / "data" / "raw" / "mot"

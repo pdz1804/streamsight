@@ -48,8 +48,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from ..core.config import Settings
 from .backends import Backend
-from .config import Settings
 
 logger = logging.getLogger(__name__)
 

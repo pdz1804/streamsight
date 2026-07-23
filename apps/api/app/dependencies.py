@@ -11,10 +11,10 @@ from typing import Annotated
 
 from fastapi import Depends, Request, WebSocket
 
-from .config import Settings, get_settings
-from .exceptions import NoBackendError
-from .runtime import InferenceRuntime
-from .sources import SourceRegistry
+from .core.config import Settings, get_settings
+from .core.exceptions import NoBackendError
+from .inference.runtime import InferenceRuntime
+from .streaming.sources import SourceRegistry
 
 
 def get_runtime(request: Request) -> InferenceRuntime:

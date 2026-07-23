@@ -1,4 +1,4 @@
-﻿"""Long-running stability soak against the live API (NFR-6).
+"""Long-running stability soak against the live API (NFR-6).
 
 Drives the real WebSocket stream rather than a standalone inference loop, because
 the things that leak are the things a loop does not exercise: the capture ring
@@ -33,7 +33,7 @@ REPORTS_DIR = REPO_ROOT / "ml" / "eval" / "reports"
 
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.wire import decode_stream_frame  # noqa: E402
+from app.streaming.wire import decode_stream_frame  # noqa: E402
 
 #: Samples inside this window after start are excluded from drift analysis.
 WARMUP_S = 120.0

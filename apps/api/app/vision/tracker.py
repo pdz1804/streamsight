@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from .models import Detection, Track
+from ..core.models import Detection, Track
 
 logger = logging.getLogger(__name__)
 

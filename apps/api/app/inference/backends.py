@@ -11,7 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from .config import Settings
+from ..core.config import Settings
 
 #: Ladder walked when the preferred backend is unavailable or runs out of VRAM.
 #: Each step is strictly cheaper in memory than the one before it.

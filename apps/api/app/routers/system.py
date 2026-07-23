@@ -8,8 +8,7 @@ from fastapi import APIRouter, File, Request, UploadFile
 from starlette.concurrency import run_in_threadpool
 
 from .. import __version__
-from ..dependencies import RegistryDep, RuntimeDep, SettingsDep
-from ..models import (
+from ..core.models import (
     GpuInfo,
     HealthResponse,
     MetricsResponse,
@@ -17,6 +16,7 @@ from ..models import (
     ModelConfigResponse,
     SourceInfo,
 )
+from ..dependencies import RegistryDep, RuntimeDep, SettingsDep
 
 logger = logging.getLogger(__name__)
 

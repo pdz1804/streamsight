@@ -7,8 +7,8 @@ import base64
 import cv2
 import numpy as np
 import pytest
-from app.exceptions import InvalidFrameError
-from app.preprocess import (
+from app.core.exceptions import InvalidFrameError
+from app.vision.preprocess import (
     decode_base64_frame,
     decode_image_bytes,
     encode_jpeg,
