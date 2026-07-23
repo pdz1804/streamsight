@@ -20,8 +20,8 @@ the pump was split into producer/consumer tasks shows what the overlap bought.
 Attributing the whole difference to one change would be wrong.
 
 Usage:
-    python ml/scripts/measure_stream_delivery.py --seconds 60
-    python ml/scripts/measure_stream_delivery.py --encodings binary --seconds 30
+    python ml/eval/measure_stream_delivery.py --seconds 60
+    python ml/eval/measure_stream_delivery.py --encodings binary --seconds 30
 """
 
 from __future__ import annotations

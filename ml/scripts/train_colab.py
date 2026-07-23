@@ -374,7 +374,8 @@ print(json.dumps(manifest, indent=2))
 #
 # 1. Keep the fine-tuned file under its own name for provenance:
 #    `ml/models/weights/yolo11n_person_vehicle.pt`
-# 2. The runtime loads `ml/models/weights/yolo11n.pt` by name (`apps/api/app/backends.py`), so
+# 2. The runtime loads `ml/models/weights/yolo11n.pt` by name, resolved in
+#    `apps/api/app/inference/backends.py`, so
 #    activating the fine-tune means backing up the pretrained file and copying over it:
 #
 #    ```powershell

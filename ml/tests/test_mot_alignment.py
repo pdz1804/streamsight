@@ -16,13 +16,11 @@ category ids) are famous. `eval_mot.py` has its own pair and had none:
 from __future__ import annotations
 
 import math
-import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
+# conftest.py puts ml/eval on sys.path.
 from eval_mot import (
     GT_PEDESTRIAN_CLASS,
     MAX_IOU_DISTANCE,

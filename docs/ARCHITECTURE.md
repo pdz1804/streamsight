@@ -108,7 +108,7 @@ step on demand: a fallback path that cannot be exercised on demand cannot be tru
 
 The boxes are drawn into the JPEG rather than composited in the browser, so pixels and overlay
 cannot desynchronise while frames are in flight. The client still receives the structured tracks for
-the legend, and the palette in `apps/web/lib/palette.ts` mirrors `apps/api/app/annotate.py` exactly
+the legend, and the palette in `apps/web/lib/palette.ts` mirrors `apps/api/app/vision/annotate.py` exactly
 so a legend swatch matches its box.
 
 ### Telemetry is bounded
@@ -127,34 +127,64 @@ not. Only frame summaries and track lifecycles are stored, never one row per box
 
 ## Layout
 
+Packages are ordered below by what they may import. `core` depends on nothing in the
+app; `routers` may depend on anything. Nothing points back up the list, so the arrow
+of dependency is readable from the import lines alone.
+
 ```
 apps/api/app/
-  main.py          app factory, lifespan, exception handling
-  config.py        settings, GPU probe, resolution policy
-  backends.py      the registry and the fallback ladder
-  runtime.py       model ownership, hot-swap, degradation
-  detector.py      Ultralytics wrapper
-  tracker.py       ByteTrack config, Results -> schemas
-  capture.py       threaded source + ring buffer
-  annotate.py      overlay drawing
-  streaming.py     WebSocket session
-  preprocess.py    decode / encode
-  sources.py       video source catalogue and uploads
-  metrics.py       rolling telemetry
-  store.py         async SQLite writer
-  models.py        Pydantic contract
-  routers/         HTTP and WebSocket endpoints
+  main.py            app factory, lifespan, exception handling
+  dependencies.py    FastAPI DI wiring
+
+  core/              knows no domain; everything else depends on it
+    config.py        settings, GPU probe, resolution policy, REPO_ROOT
+    exceptions.py    the error hierarchy the handlers map to status codes
+    models.py        the Pydantic contract, mirrored by apps/web/lib/types.ts
+
+  telemetry/
+    metrics.py       rolling latency/throughput window
+    store.py         async SQLite writer
+
+  inference/         the only package that touches model state
+    backends.py      the registry and the fallback ladder
+    detector.py      Ultralytics wrapper
+    registry.py      optional MLflow artifact resolution
+    runtime.py       model ownership, hot-swap, degradation
+
+  vision/            per-frame work, independent of the frame's origin
+    preprocess.py    decode / encode
+    tracker.py       ByteTrack config, Results -> schemas
+    annotate.py      overlay drawing
+
+  streaming/
+    capture.py       threaded source + ring buffer
+    sources.py       video source catalogue and uploads
+    session.py       the producer/consumer pump
+    wire.py          binary frame format: [len][JSON header][JPEG]
+
+  routers/           HTTP and WebSocket endpoints
 
 apps/web/
-  app/             routes: live, upload, metrics, settings
-  components/      console UI
-  lib/             api client, types, streaming hook, theme, palette
-  e2e/             Playwright specs
+  app/               routes: live, upload, metrics, settings
+  components/        feature components
+  components/ui/     primitives, behind an index barrel
+  hooks/             use-stream.ts
+  lib/               api client, types, theme, palette
+  e2e/               Playwright specs
 
 ml/
-  quantization/    export_engines.py, calibrate.py
-  eval/            benchmark_frontier.py + reports/
-  scripts/         fetch_assets.py, benchmark_inference.py
+  data/              manifests + download/preparation scripts
+  train/             trainer + Hydra config
+  quantization/      export_engines.py, calibrate.py, benchmark_precision.py
+  eval/              measurement: accuracy harnesses, throughput benchmarks,
+                     live-service probes, and reports/
+  tests/             guards on the conversions that fail silently
+  scripts/           operator tools: fetch_assets.py, train_colab.py
 ```
+
+The API package deliberately stays at `apps/api/app` rather than moving under a
+`src/` layout. src-layout earns its keep for distributions that get installed; this
+service is only ever run in place, and the move would invalidate `--app-dir apps/api`
+and `app.main:app` everywhere they appear for no behavioural gain.
 
 Phu Nguyen - HCMC, Vietnam

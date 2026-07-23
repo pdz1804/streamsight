@@ -1,7 +1,7 @@
 /**
  * Track colour palette.
  *
- * These are the exact colours `apps/api/app/annotate.py` burns into the frame,
+ * These are the exact colours `apps/api/app/vision/annotate.py` burns into the frame,
  * converted from its BGR tuples to RGB hex. The legend has to match the boxes
  * pixel for pixel, so the two lists are kept deliberately in sync -- if you
  * change one, change the other.

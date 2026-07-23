@@ -59,7 +59,7 @@ jobs:
       # boots the real runtime. The remaining tests are pure logic plus fixtures
       # that skip themselves when no artifact is present.
       # No path argument: a positional path overrides `testpaths` in pyproject.toml,
-      # which would silently drop ml/eval -- and that is where the 14 guards against
+      # which would silently drop ml/tests -- and that is where the guards against
       # the silent-zero-mAP conversions live. Those are exactly the tests CI must run.
       - name: Pytest (fast tier)
         run: pytest -q -m "not slow"

@@ -1,7 +1,7 @@
 """Binary stream framing.
 
-The framing is the contract between `app/wire.py` and the browser's parser in
-`apps/web/lib/use-stream.ts`. Both sides compute an offset from a length prefix,
+The framing is the contract between `app/streaming/wire.py` and the browser's parser in
+`apps/web/hooks/use-stream.ts`. Both sides compute an offset from a length prefix,
 so an off-by-one here does not raise -- it silently hands the image decoder a
 JPEG with a few stray bytes of JSON on the front, or lops off its header. These
 tests pin the boundaries.

@@ -113,7 +113,7 @@ serve that shape, and fell through to the dynamic-shape PyTorch CPU backend.
 
 Boxes are burned into the JPEG rather than composited client-side, so pixels and overlay cannot
 desynchronise while frames are in flight. The client still receives structured tracks for the
-legend, and `apps/web/lib/palette.ts` mirrors `apps/api/app/annotate.py` exactly so a legend swatch
+legend, and `apps/web/lib/palette.ts` mirrors `apps/api/app/vision/annotate.py` exactly so a legend swatch
 matches its box. Colours are keyed on track id, so an object keeps its colour as long as it keeps
 its identity — that visual continuity is what makes tracking legible to a human.
 

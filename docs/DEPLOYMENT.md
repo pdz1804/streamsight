@@ -113,7 +113,7 @@ python ml/quantization/export_engines.py --formats openvino_cpu
 
 Those container figures have **not** been measured — the numbers above are native. Docker on Windows
 adds a VM hop, so treat them as an upper bound until you benchmark inside the container with
-`python ml/scripts/benchmark_inference.py --engine fp32_cpu --frames 200`.
+`python ml/eval/benchmark_inference.py --engine fp32_cpu --frames 200`.
 
 Running GPU inference in a container is possible but is not configured here. It needs the NVIDIA
 Container Toolkit on the host, a CUDA runtime base image, `deploy.resources.reservations.devices`
@@ -123,7 +123,7 @@ Container Toolkit on the host, a CUDA runtime base image, `deploy.resources.rese
 
 ## Environment variables
 
-All API settings use the `STREAMSIGHT_` prefix and are read by `apps/api/app/config.py`. Copy
+All API settings use the `STREAMSIGHT_` prefix and are read by `apps/api/app/core/config.py`. Copy
 `.env.example` to `.env` at the repo root, or set them in the compose file. Every one is optional.
 
 | Variable | Default | Purpose |

@@ -42,8 +42,9 @@ RUN pip install --upgrade pip \
         --index-url https://download.pytorch.org/whl/cpu \
     && pip install -r requirements.txt
 
-# The repo layout is load-bearing: app/config.py resolves REPO_ROOT four parents
-# up from itself and expects ml/models and apps/api/assets to sit beside it.
+# The repo layout is load-bearing: app/core/config.py resolves REPO_ROOT five
+# parents up from itself and expects ml/models and apps/api/assets to sit beside
+# it. apps/api/tests/test_repo_layout.py is the guard on that count.
 COPY pyproject.toml ./
 COPY apps/api ./apps/api
 COPY ml ./ml

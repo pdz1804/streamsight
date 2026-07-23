@@ -1,5 +1,5 @@
 /**
- * Client mirror of the FastAPI schemas in `apps/api/app/models.py`.
+ * Client mirror of the FastAPI schemas in `apps/api/app/core/models.py`.
  * Keep the two files in step: these are the service's public contract.
  */
 

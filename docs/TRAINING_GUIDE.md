@@ -122,7 +122,7 @@ Locally:
 # 1. Keep it under its own name, so provenance is not lost the moment it is activated
 Copy-Item <downloaded>\best.pt ml\models\weights\yolo11n_person_vehicle.pt
 
-# 2. The runtime loads weights/yolo11n.pt by name (apps/api/app/backends.py), so activating
+# 2. The runtime loads weights/yolo11n.pt by name (apps/api/app/inference/backends.py), so activating
 #    the fine-tune means shadowing the pretrained file - back it up first
 Copy-Item ml\models\weights\yolo11n.pt ml\models\weights\yolo11n_pretrained.pt
 Copy-Item ml\models\weights\yolo11n_person_vehicle.pt ml\models\weights\yolo11n.pt

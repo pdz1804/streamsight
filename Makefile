@@ -63,14 +63,14 @@ fmt:
 	$(PY) -m black apps/api ml
 
 bench:
-	$(PY) ml/scripts/benchmark_inference.py --engine $(ENGINE) --imgsz $(IMGSZ) --frames $(FRAMES)
+	$(PY) ml/eval/benchmark_inference.py --engine $(ENGINE) --imgsz $(IMGSZ) --frames $(FRAMES)
 
 frontier:
 	$(PY) ml/eval/benchmark_frontier.py --frames $(FRAMES)
 
 # Requires the API to already be serving on :8100 (`make api` in another shell).
 soak:
-	$(PY) ml/scripts/soak_stream.py --duration $(SOAK)
+	$(PY) ml/eval/soak_stream.py --duration $(SOAK)
 
 export:
 	$(PY) ml/quantization/export_engines.py --formats $(FORMATS)

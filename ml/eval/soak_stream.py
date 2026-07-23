@@ -10,8 +10,8 @@ RSS between the first steady-state sample and the last. A short warmup window is
 excluded so one-off allocations are not counted as a leak.
 
 Usage:
-    python ml/scripts/soak_stream.py --duration 14400
-    python ml/scripts/soak_stream.py --duration 600 --interval 30
+    python ml/eval/soak_stream.py --duration 14400
+    python ml/eval/soak_stream.py --duration 600 --interval 30
 """
 
 from __future__ import annotations
